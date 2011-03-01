@@ -3,4 +3,7 @@ dist/
 deploy/
 *_managed/
 target/
+.idea/
+project/boot/
+project/plugins/
 .history

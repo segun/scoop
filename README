@@ -14,3 +14,14 @@ TODO
 		A lot
 	Unpacking
 		BindTransmitter
+
+Building
+======================================
+scoop uses sbt and an sbt/idea plugin. After you pull scoop, run 
+	sbt update
+	sbt idea
+sbt can be downloaded from google(sbt)
+
+Tests
+====================================
+	sbt test
