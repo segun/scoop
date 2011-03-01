@@ -7,3 +7,4 @@ target/
 project/boot/
 project/plugins/
 .history
+.DS_Store

@@ -6,14 +6,14 @@ hone my skills in scala.
 
 Implemented PDUs
 	Packing
-		BindTransmitter
+		com.trinisoftinc.smpp34pdu.models.BindTransmitter
 	Unpacking
 
 TODO
 	Packing
 		A lot
 	Unpacking
-		BindTransmitter
+		com.trinisoftinc.smpp34pdu.models.BindTransmitter
 
 Building
 ======================================
