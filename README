@@ -1,0 +1,16 @@
+SMPP 3.4 PDU Packer/Unpacker Library.
+This library is based partly on smpp34pdu (erlang/github) and JSMPP.
+
+I am contributing to the smpp34pdu so I guess this project might help me
+hone my skills in scala.
+
+Implemented PDUs
+	Packing
+		BindTransmitter
+	Unpacking
+
+TODO
+	Packing
+		A lot
+	Unpacking
+		BindTransmitter
