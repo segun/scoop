@@ -8,6 +8,8 @@ package com.trinisoftinc.smpp34pdu.models
  * To change this template use File | Settings | File Templates.
  */
 
+import com.trinisoftinc.smpp34pdu.util.PDUData._
+
 case class BindTransmitter(systemID: String, password: String,systemType: String,
                            interfaceVersion: Short, addressTon: Short, addressNpi: Short,
                            addressRange: String) extends PDUPacker {

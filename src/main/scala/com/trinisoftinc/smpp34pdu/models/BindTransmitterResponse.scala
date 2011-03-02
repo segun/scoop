@@ -9,11 +9,3 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util._
 
 case class BindTransmitterResponse(systemID: String, scInterfaceVersion: TLV) extends PDUUnPacker
-
-
-
-
-
-
-
-

@@ -8,12 +8,12 @@ package com.trinisoftinc.smpp34pdu.models
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util._
 
-sealed trait PDUPacker
-sealed trait PDUUnPacker
+trait PDUPacker
+trait PDUUnPacker
 
 case class PDU(commandID: Int, commandStatus: Int, 
                sequenceNumber: Int, body: Array[Byte]) extends PDUPacker {
-  def toBytes(): Array[Byte] = {
+  def pack(): Array[Byte] = {
     val len = body.length + SMPPConstants.HeaderOctectsSize
     int2Bytes(len) ++
     int2Bytes(commandID) ++
