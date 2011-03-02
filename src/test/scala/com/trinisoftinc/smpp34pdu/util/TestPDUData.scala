@@ -32,13 +32,33 @@ class TestPDUData extends FlatSpec with ShouldMatchers {
   "bytes2Int" should "give an Integer" in {
     val expected = 1058
     val result = bytes2Int(Array(0, 0, 4, 34))
-    assert(expected === result)
+    result should equal (expected)
   }
 
   "bytes2Short" should " give a Short" in {
     val expected: Short = 516
     val result = bytes2Short(Array(2, 4))
-    assert(expected === result)
+    result should equal (expected)
+  }
+
+  "bytes2String" should "give a String" in {
+    val result = bytes2String(Array(97,98,99))
+    val expected = "abc"
+
+    result should equal (expected)
+  }
+
+  it should "give an empty String" in {
+    val result = bytes2String(Array(0))
+    val expected = ""
+    result.length should equal (0)
+    //expected.length should equal (0)
+  }
+
+  "sshort2bytes" should "give an Array of Bytes" in {
+    val expected = Array(2)
+    val result = sshort2Bytes(0x2)
+    result should equal (expected)
   }
 
   "cstring2Bytes" should "guve an Array of Bytes, padded with 0" in {

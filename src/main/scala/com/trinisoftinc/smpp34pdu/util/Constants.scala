@@ -11,6 +11,6 @@ object Commands {
 
 object SMPPConstants {
   val DefaultCString = ""
-  val InterfaceVersion = 0x34
+  val InterfaceVersion: Short = 0x34
   val HeaderOctectsSize = 0x10 //16 in hexadecimal
 }

@@ -62,7 +62,15 @@ object PDUData {
   def string2Bytes(value: String, max: Int): Array[Byte] = {
     (value.length match {
       case n: Int if n <= max => value
+      case empty: Int if empty == 0 => "\0"
       case _ => value.substring(0, max)
     }).getBytes
+  }
+
+  def bytes2String(value: Array[Byte]): String = {
+    value.length match {
+      case 1 if(value(0) == 0) => ""
+      case _ => value.map(_.asInstanceOf[Char]).mkString
+    }
   }
 }

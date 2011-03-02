@@ -11,25 +11,45 @@ import org.scalatest.matchers.ShouldMatchers
 import com.trinisoftinc.smpp34pdu.util._
 
 class TestPDU extends FlatSpec with ShouldMatchers {
+  val head: Array[Byte] = Array(
+    0, 0, 0, 36,
+    0, 0, 0, 2,
+    0, 0, 0, 0,
+    0, 0, 0, 1
+  )
+
+  val body2: Array[Byte] = Array(
+    97, 98, 99, 100, 101, 102, 103, 0,
+    120, 121, 122, 0,
+    67, 77, 84, 0,
+    52,
+    2,
+    1,
+    0
+  )
 
   "A PDU" should "equals an Array of head ++ body after packing" in {
-    val head: Array[Byte] = Array(
-      0, 0, 0, 35,
-      0, 0, 0, 2,
-      0, 0, 0, 0,
-      0, 0, 0, 1
-    )
-    val body: Array[Byte] = Array(
-      67, 77, 84, 0,
-      112, 97, 118, 101, 108, 0,
-      99, 111, 122, 121, 0,
-      52,
-      2,
-      1,
-      0
-    )
-    val expected = head ++ body
-    val result = PDU(Commands.BindTransmitter, 0x00, 0x01, body).pack
+    val bindTransmitter = BindTransmitter("abcdefg", "xyz", "CMT", SMPPConstants.InterfaceVersion, 2, 1, "")
+
+    val expected = head ++ body2
+
+    val result = PDU(Commands.BindTransmitter, 0x00, 0x01, bindTransmitter).pack
+
     result should equal(expected)
+    bindTransmitter.pack should equal (body2)
+  }
+
+  it should "equal a PDU after packing and unpacking" in {
+    val bindTransmitter:BindTransmitter =
+      BindTransmitter("abcdefg", "xyz", "CMT", SMPPConstants.InterfaceVersion, 2, 1, "a")
+
+    val expected:PDU = PDU(Commands.BindTransmitter, 0x00, 0x01, bindTransmitter)
+
+    val (result, pduPacker: BindTransmitter) = expected.unpack(expected.pack)
+
+    result.commandID should equal(expected.commandID)
+    result.commandStatus should equal(expected.commandStatus)
+    result.sequenceNumber should equal(expected.sequenceNumber)
+    pduPacker.pack should equal (bindTransmitter.pack)
   }
 }
