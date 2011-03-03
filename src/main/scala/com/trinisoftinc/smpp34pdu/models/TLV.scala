@@ -8,10 +8,18 @@ package com.trinisoftinc.smpp34pdu.models
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 
-case class TLV(tag: Int, value: Any) {
+case class TLV(tag: Short = ZERO.asInstanceOf[Short], value: Any = ZERO) {
+
   def pack(): Array[Byte] = {
     tag match {
-      case n: Int if(n == scInterfaceVersion) => pack(1)
+      case n if(n == scInterfaceVersion) => pack(1)
+    }
+  }
+
+  private def pack(len: Short): Array[Byte] = {
+    tag match {
+      case n if(n == scInterfaceVersion) =>
+        short2Bytes(tag.asInstanceOf[Short]) ++ short2Bytes(len) ++ sshort2Bytes(INTERFACE_VERSION)
     }
   }
 
@@ -22,13 +30,8 @@ case class TLV(tag: Int, value: Any) {
     if(len != value.length) {
       throw new IndexOutOfBoundsException("value is not of the correct length")
     }
-    TLV(bytes2Short(tag), bytes2SShort(value))
-  }
-
-  private def pack(len: Int): Array[Byte] = {
-    tag match {
-      case n: Int if(n == scInterfaceVersion) =>
-        short2Bytes(tag.asInstanceOf[Short]) ++ short2Bytes(1) ++ sshort2Bytes(INTERFACE_VERSION)
+    bytes2Short(tag) match {
+      case n if (n == scInterfaceVersion) => TLV(bytes2Short(tag), bytes2SShort(value))
     }
   }
 }

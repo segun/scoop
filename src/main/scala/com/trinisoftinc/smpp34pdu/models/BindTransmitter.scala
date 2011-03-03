@@ -9,14 +9,11 @@ package com.trinisoftinc.smpp34pdu.models
  */
 
 import com.trinisoftinc.smpp34pdu.util.PDUData._
-  import com.trinisoftinc.smpp34pdu.util._
+  import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
-case class BindTransmitter(systemID: String, password: String,systemType: String,
-                           interfaceVersion: Short, addressTon: Short, addressNpi: Short,
-                           addressRange: String) extends PDUPacker {
-  def this() = {
-    this("","","", SMPPConstants.INTERFACE_VERSION, 1, 1, "")
-  }
+case class BindTransmitter(systemID: String = "", password: String = "",systemType: String = "",
+                           interfaceVersion: Short = INTERFACE_VERSION, addressTon: Short = 0x0001, addressNpi: Short = 0x0001,
+                           addressRange: String = "") extends PDUPacker {
 
   def pack(): Array[Byte] = {
       cstring2Bytes(systemID, 16) ++

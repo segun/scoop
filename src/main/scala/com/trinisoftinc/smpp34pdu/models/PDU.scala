@@ -13,8 +13,6 @@ trait PDUPacker {
   def unpack(data: Array[Byte]): PDUPacker
 }
 
-trait PDUUnPacker
-
 case class PDU(commandID: Int, commandStatus: Int, 
                sequenceNumber: Int, body: PDUPacker) {
 

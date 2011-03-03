@@ -82,7 +82,7 @@ object SMPPConstants {
   val languageIndicator = 0x020D
   val sarTotalSegments = 0x020E
   val sarSegmentSeqnum = 0x020F
-  val scInterfaceVersion = 0x0210
+  val scInterfaceVersion: Short = 0x0210
   val callBackNumPresInd = 0x0302
   var callBackNumAtag = 0x0303
   var numberOfMessages = 0x0304
@@ -91,7 +91,7 @@ object SMPPConstants {
   var setDpf = 0x0421
   var msAvailabilityStatus = 0x0422
   var networkErrorCode = 0x0423
-  var messagePayload = 0x0424
+  var messagePayload: Short = 0x0424
   var deliveryFailureReason = 0x0425
   var moreMessagesToSend = 0x0426
   var messageState = 0x0427
@@ -107,4 +107,5 @@ object SMPPConstants {
   val DEFAULTCSTRING = ""
   val INTERFACE_VERSION: Short = 0x34
   val HEADEROCTETSIZE = 0x10 //16 in hexadecimal
+  val ZERO = 0x00000000
 }
