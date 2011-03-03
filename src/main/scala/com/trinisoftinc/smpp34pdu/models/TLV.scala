@@ -5,8 +5,8 @@
 
 package com.trinisoftinc.smpp34pdu.models
 
-case class TLV(tag: Int, length: Int, value: Any) {
+case class TLV(command: Int, tag: Int, length: Int, value: Any) {
   def pack = {
-    
+
   }
 }

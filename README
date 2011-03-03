@@ -8,6 +8,7 @@ Implemented PDUs
 	Packing
 		BindTransmitter
 	Unpacking
+		BindTransmitter
 
 TODO
 	Packing
