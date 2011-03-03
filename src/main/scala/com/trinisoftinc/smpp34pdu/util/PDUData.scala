@@ -43,11 +43,15 @@ object PDUData {
     )    
   }
 
-  def bytes2Short(value: Array[Byte]): Int = {
+  def bytes2Short(value: Array[Byte]): Short = {
     (
       ((value(0) & 0xff) << 8) +
       (value(1) & 0xff)
     ).asInstanceOf[Short]
+  }
+
+  def bytes2SShort(value: Array[Byte]): Short = {
+    (value(0) & 0xff).asInstanceOf[Short]
   }
 
   def cstring2Bytes(value: String, max: Int): Array[Byte] = {

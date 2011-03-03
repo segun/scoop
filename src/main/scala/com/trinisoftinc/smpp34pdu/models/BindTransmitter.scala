@@ -15,7 +15,7 @@ case class BindTransmitter(systemID: String, password: String,systemType: String
                            interfaceVersion: Short, addressTon: Short, addressNpi: Short,
                            addressRange: String) extends PDUPacker {
   def this() = {
-    this("","","", SMPPConstants.InterfaceVersion, 1, 1, "")
+    this("","","", SMPPConstants.INTERFACE_VERSION, 1, 1, "")
   }
 
   def pack(): Array[Byte] = {

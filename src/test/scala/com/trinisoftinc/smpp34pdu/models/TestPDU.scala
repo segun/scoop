@@ -8,8 +8,8 @@ package com.trinisoftinc.smpp34pdu.models
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
-import com.trinisoftinc.smpp34pdu.util.PDUData
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
+
 
 class TestPDU extends FlatSpec with ShouldMatchers {
   val head: Array[Byte] = Array(
@@ -30,7 +30,7 @@ class TestPDU extends FlatSpec with ShouldMatchers {
   )
 
   "A PDU" should "equals an Array of head ++ body after packing" in {
-    val bindTransmitter = BindTransmitter("abcdefg", "xyz", "CMT", InterfaceVersion, 2, 1, "")
+    val bindTransmitter = BindTransmitter("abcdefg", "xyz", "CMT", INTERFACE_VERSION, 2, 1, "")
 
     val expected = head ++ body2
 
@@ -42,7 +42,7 @@ class TestPDU extends FlatSpec with ShouldMatchers {
 
   it should "equal a PDU after packing and unpacking" in {
     val bindTransmitter:BindTransmitter =
-      BindTransmitter("abcdefg", "xyz", "CMT", InterfaceVersion, 2, 1, "a")
+      BindTransmitter("abcdefg", "xyz", "CMT", INTERFACE_VERSION, 2, 1, "a")
 
     val expected:PDU = PDU(BIND_TRANSMITTER, ESME_ROK, 0x00000001, bindTransmitter)
 

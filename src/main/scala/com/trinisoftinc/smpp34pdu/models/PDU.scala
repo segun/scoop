@@ -23,7 +23,7 @@ case class PDU(commandID: Int, commandStatus: Int,
   }
 
   def pack(): Array[Byte] = {
-    val len = body.pack.length + SMPPConstants.HeaderOctectsSize
+    val len = body.pack.length + SMPPConstants.HEADEROCTETSIZE
     int2Bytes(len) ++
     int2Bytes(commandID) ++
     int2Bytes(commandStatus) ++

@@ -102,7 +102,9 @@ object SMPPConstants {
   var alertOnMessageDelivery = 0x130C
   var itsReplyType = 0x1308
   var itsSessionInfo = 0x1383
-  val DefaultCString = ""
-  val InterfaceVersion: Short = 0x34
-  val HeaderOctectsSize = 0x10 //16 in hexadecimal
+
+
+  val DEFAULTCSTRING = ""
+  val INTERFACE_VERSION: Short = 0x34
+  val HEADEROCTETSIZE = 0x10 //16 in hexadecimal
 }
