@@ -1,19 +1,24 @@
 package com.trinisoftinc.smpp34pdu.models
 
-/**
- * Created by IntelliJ IDEA.
- * User: trinisoftinc
- * Date: 3/2/11
- * Time: 11:56 AM
- * To change this template use File | Settings | File Templates.
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
-import com.trinisoftinc.smpp34pdu.util._
+import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
+
 
 class TestBindTransmitter extends FlatSpec with ShouldMatchers {
+  val head: Array[Byte] = Array(
+    0, 0, 0, 36,
+    0, 0, 0, 2,
+    0, 0, 0, 0,
+    0, 0, 0, 1
+  )
+
   val body2: Array[Byte] = Array(
     97, 98, 99, 100, 101, 102, 103, 0,
     120, 121, 122, 0,
@@ -24,21 +29,29 @@ class TestBindTransmitter extends FlatSpec with ShouldMatchers {
     0
   )
 
-  "unpack" should "return BindTransmitter" in {
-    val b = BindTransmitter("abcdefg", "xyz", "CMT", SMPPConstants.INTERFACE_VERSION, 2, 1, "")
-    val result = b.unpack(body2)
-    b.pack should  equal (result.pack)
+  "A BindTransmitter PDU" should "equals an Array of head ++ body after packing" in {
+    val bind = BindRequest("abcdefg", "xyz", "CMT", INTERFACE_VERSION, 2, 1, "")
+
+    val expected = head ++ body2
+
+    val result = PDU(BIND_TRANSMITTER, ESME_ROK, 0x00000001, bind).pack
+
+    result should equal(expected)
+    bind.pack should equal (body2)
   }
 
-  it should "return an Array of Bytes when packed" in {
-    val b = BindTransmitter("abcdefg", "xyz", "CMT", SMPPConstants.INTERFACE_VERSION, 2, 1, "")
-    b.unpack(b.pack) should equal (b)
-  }
+  it should "equal a BindTransmitter PDU after packing and unpacking" in {
+    val bind =
+      BindRequest("abcdefg", "xyz", "CMT", INTERFACE_VERSION, 2, 1, "a")
 
+    val expected:PDU = PDU(BIND_TRANSMITTER, ESME_ROK, 0x00000001, bind)
 
-  "pack" should "return an Array of Bytes" in {
-    val b = BindTransmitter("abcdefg", "xyz", "CMT", SMPPConstants.INTERFACE_VERSION, 2, 1, "")
+    val (result, pduPacker: BindRequest) = expected.unpack(expected.pack)
 
-    b.pack should equal (body2)
+    result.commandID should equal(expected.commandID)
+    result.commandStatus should equal(expected.commandStatus)
+    result.sequenceNumber should equal(expected.sequenceNumber)
+    pduPacker.pack should equal (bind.pack)
+    //pduPacker should equal (bindTransmitter.asInstanceOf[])
   }
 }

@@ -43,7 +43,7 @@ case class PDU(commandID: Int, commandStatus: Int,
     val sequenceNumber = bytes2Int(splitted(3))
 
     val bodyAsBytes = data.slice(16, data.length)
-    val pduPacker = body.unpack(bodyAsBytes)
+    val pduPacker: PDUPacker = body.unpack(bodyAsBytes)
     (PDU(commandId, commandStatus, sequenceNumber, pduPacker), pduPacker)
   }
 }
