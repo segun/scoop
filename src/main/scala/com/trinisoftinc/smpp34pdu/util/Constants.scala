@@ -7,6 +7,7 @@ package com.trinisoftinc.smpp34pdu.util
 
 object SMPPConstants {
   val BIND_TRANSMITTER = 0x00000002
+  val BIND_TRANSMITTER_RESP = 0x80000002
 
   val ESME_ROK = 0x00000000
   val ESME_RINVMSGLEN = 0x00000001

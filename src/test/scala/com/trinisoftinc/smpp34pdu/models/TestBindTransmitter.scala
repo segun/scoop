@@ -48,10 +48,8 @@ class TestBindTransmitter extends FlatSpec with ShouldMatchers {
 
     val (result, pduPacker: BindRequest) = expected.unpack(expected.pack)
 
-    result.commandID should equal(expected.commandID)
-    result.commandStatus should equal(expected.commandStatus)
-    result.sequenceNumber should equal(expected.sequenceNumber)
+    result should equal (expected)
     pduPacker.pack should equal (bind.pack)
-    //pduPacker should equal (bindTransmitter.asInstanceOf[])
+    pduPacker should equal (bind)
   }
 }

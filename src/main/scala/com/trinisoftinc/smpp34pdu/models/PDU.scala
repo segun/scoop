@@ -9,8 +9,8 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util._
 
 trait PDUPacker {
-  def pack(): Array[Byte]
-  def unpack(data: Array[Byte]): PDUPacker
+  def pack(): Array[Int]
+  def unpack(data: Array[Int]): PDUPacker
 }
 
 case class PDU(commandID: Int, commandStatus: Int, 
@@ -20,16 +20,16 @@ case class PDU(commandID: Int, commandStatus: Int,
     this(0,0,0,null)
   }
 
-  def pack(): Array[Byte] = {
+  def pack(): Array[Int] = {
     val len = body.pack.length + SMPPConstants.HEADEROCTETSIZE
-    int2Bytes(len) ++
-    int2Bytes(commandID) ++
-    int2Bytes(commandStatus) ++
-    int2Bytes(sequenceNumber) ++
+    int2Binary(len) ++
+    int2Binary(commandID) ++
+    int2Binary(commandStatus) ++
+    int2Binary(sequenceNumber) ++
     body.pack
   }
 
-  def unpack(data: Array[Byte]): Tuple2[PDU, PDUPacker] = {
+  def unpack(data: Array[Int]): Tuple2[PDU, PDUPacker] = {
     val header = data.slice(0, 16)
     var splitted = for {
       x <- 0 to header.length by 4
@@ -38,9 +38,9 @@ case class PDU(commandID: Int, commandStatus: Int,
 
 
     val len = splitted(0)
-    val commandId = bytes2Int(splitted(1))
-    val commandStatus = bytes2Int(splitted(2))
-    val sequenceNumber = bytes2Int(splitted(3))
+    val commandId = binary2Int(splitted(1))
+    val commandStatus = binary2Int(splitted(2))
+    val sequenceNumber = binary2Int(splitted(3))
 
     val bodyAsBytes = data.slice(16, data.length)
     val pduPacker: PDUPacker = body.unpack(bodyAsBytes)

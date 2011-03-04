@@ -13,27 +13,49 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
  */
 
 class TestBindTransmitterResponse extends FlatSpec with ShouldMatchers {
-  val body: Array[Byte] = Array(97,98,99,100,101,102,103,104,105,106,0,2,16,0,1,52)
-  val body2: Array[Byte] = Array(97,98,99,100,101,102,103,104,105,106,0)
+  val head: Array[Int] = Array(
+    0, 0, 0, 32,
+    128, 0, 0, 2,
+    0, 0, 0, 0,
+    0, 0, 0, 1
+  )
 
-  "pack (with TLV)" should "return an Array of Bytes (with TLV)" in {
-    val result = BindTransmitterResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
-    result.pack should equal (body)
-  }
+  val head2: Array[Int] = Array(
+    0, 0, 0, 27,
+    128, 0, 0, 2,
+    0, 0, 0, 0,
+    0, 0, 0, 1
+  )
 
-  "pack (without TLV)" should "return an Array of Bytes (without TLV)" in {
-    val result = BindTransmitterResponse("abcdefghij")
-    result.pack should equal (body2)
-  }
+  val body: Array[Int] = Array(97,98,99,100,101,102,103,104,105,106,0,2,16,0,1,52)
+  val body2: Array[Int] = Array(97,98,99,100,101,102,103,104,105,106,0)
 
-  "unpack (with TLV)" should "return BindTransmitterResponse (with TLV)" in {
-    val expected = BindTransmitterResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
-    val result = expected.unpack(body)
+  "A BindTransmitterResponse PDU(with TLV)" should "equal an Array of head ++ body (with TLV) when packed" in {
+    val bindResponse = BindResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val expected = head ++ body
+    val result = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
     result should equal (expected)
   }
 
-  "unpack (without TLV)" should "return BindTransmitterResponse (without TLV)" in {
-    val expected = BindTransmitterResponse("abcdefghij")
+  it should "equal an Array of head ++ body (without TLV) when packed" in {
+    val bindResponse = BindResponse("abcdefghij")
+    val expected = head2 ++ body2
+    val result = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
+    result should equal (expected)
+  }
+
+  "A BindTransmitterResponse PDU(with TLV)" should "equal BindTransmitterResponse when packed and unpacked (with TLV)" in {
+    val bindResponse = BindResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val expected = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse)
+    val (result, pduPacker) = expected.unpack(expected.pack)
+
+    result should equal (expected)
+    result.pack should equal (expected.pack)
+    pduPacker should equal (bindResponse)
+  }
+
+  "A BindTransmitterResponse unpack method (without TLV)" should "return BindResponse (without TLV)" in {
+    val expected = BindResponse("abcdefghij")
     val result = expected.unpack(body2)
     result should equal (expected)
 
