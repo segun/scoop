@@ -11,7 +11,7 @@ import org.scalatest.matchers.ShouldMatchers
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 
-class TestBindTransmitter extends FlatSpec with ShouldMatchers {
+class TestBinds extends FlatSpec with ShouldMatchers {
   val head: Array[Byte] = Array(
     0, 0, 0, 36,
     0, 0, 0, 2,

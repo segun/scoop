@@ -12,7 +12,7 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
  * To change this template use File | Settings | File Templates.
  */
 
-class TestBindTransmitterResponse extends FlatSpec with ShouldMatchers {
+class TestBindResponses extends FlatSpec with ShouldMatchers {
   val head: Array[Int] = Array(
     0, 0, 0, 32,
     128, 0, 0, 2,
