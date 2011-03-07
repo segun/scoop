@@ -11,21 +11,21 @@ package com.trinisoftinc.smpp34pdu.models
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
-case class BindRequest(sid: String = "",
-                                pwd: String = "",
-                                sst: String = "",
-                                itv: Short = INTERFACE_VERSION,
-                                adt: Short = 0x0001,
-                                adn: Short = 0x0001,
-                                adr: String = "") extends PDUPacker {
+case class BindRequest(systemId: String = "",
+                                password: String = "",
+                                systemType: String = "",
+                                interfaceVersion: Short = INTERFACE_VERSION,
+                                addressTon: Short = 0x0001,
+                                addressNpi: Short = 0x0001,
+                                addressRange: String = "") extends PDUPacker {
   def pack(): Array[Int] = {
-    cstring2Binary(sid, 16) ++
-      cstring2Binary(pwd, 9) ++
-      cstring2Binary(sst, 13) ++
-      sshort2Binary(itv) ++
-      sshort2Binary(adt) ++
-      sshort2Binary(adn) ++
-      cstring2Binary(adr, 41)
+    cstring2Binary(systemId, 16) ++
+      cstring2Binary(password, 9) ++
+      cstring2Binary(systemType, 13) ++
+      sshort2Binary(interfaceVersion) ++
+      sshort2Binary(addressTon) ++
+      sshort2Binary(addressNpi) ++
+      cstring2Binary(addressRange, 41)
   }
 
   def unpack(data: Array[Int]) = {
