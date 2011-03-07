@@ -12,7 +12,7 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 
 class TestBinds extends FlatSpec with ShouldMatchers {
-  val body: Array[Byte] = Array(
+  val body: Array[Int] = Array(
     97, 98, 99, 100, 101, 102, 103, 0,
     120, 121, 122, 0,
     67, 77, 84, 0,
