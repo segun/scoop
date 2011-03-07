@@ -22,12 +22,12 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
       0, 0, 0, 1
     )
 
-    val body: Array[Int] = Array(97,98,99,100,101,102,103,104,105,106,0,2,16,0,1,52)
+    val body: Array[Int] = Array(97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 0, 2, 16, 0, 1, 52)
 
     val bindResponse = BindResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
     val expected = head ++ body
     val result = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
-    result should equal (expected)
+    result should equal(expected)
   }
 
   it should "equal an Array of head ++ body (without TLV) when packed" in {
@@ -37,12 +37,12 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
       0, 0, 0, 0,
       0, 0, 0, 1
     )
-    val body2: Array[Int] = Array(97,98,99,100,101,102,103,104,105,106,0)
+    val body2: Array[Int] = Array(97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 0)
 
     val bindResponse = BindResponse("abcdefghij")
     val expected = head2 ++ body2
     val result = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
-    result should equal (expected)
+    result should equal(expected)
   }
 
   "A BindTransmitterResponse PDU" should "equal BindTransmitterResponse when packed and unpacked" in {
@@ -50,9 +50,9 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
     val expected = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse)
     val (result, pduPacker) = expected.unpack(expected.pack)
 
-    result should equal (expected)
-    result.pack should equal (expected.pack)
-    pduPacker should equal (bindResponse)
+    result should equal(expected)
+    result.pack should equal(expected.pack)
+    pduPacker should equal(bindResponse)
   }
 
   "A BindRecieverResponse PDU(with TLV)" should "equal an Array of head ++ body (with TLV) when packed" in {
@@ -62,11 +62,11 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
       0, 0, 0, 0,
       0, 0, 0, 1
     )
-    val body: Array[Int] = Array(97,98,99,100,0,2,16,0,1,52)
+    val body: Array[Int] = Array(97, 98, 99, 100, 0, 2, 16, 0, 1, 52)
     val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
     val expected = head ++ body
     val result = PDU(BIND_RECEIVER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
-    result should equal (expected)
+    result should equal(expected)
   }
 
   it should "equal and Array of head ++ body (without TLV) when packed" in {
@@ -76,20 +76,55 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
       0, 0, 0, 0,
       0, 0, 0, 1
     )
-    val body2: Array[Int] = Array(97,98,99,100,0)
+    val body2: Array[Int] = Array(97, 98, 99, 100, 0)
     val bindResponse = BindResponse("abcd")
     val expected = head2 ++ body2
     val result = PDU(BIND_RECEIVER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
-    result should equal (expected)
+    result should equal(expected)
   }
 
-  "A BindRecieverResponse PDU" should "equal BindTransmitterResponse when packed and unpacked" in {
+  "A BindRecieverResponse PDU" should "equal BindRecieverResponse when packed and unpacked" in {
     val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
     val expected = PDU(BIND_RECEIVER_RESP, ESME_ROK, 0x00000001, bindResponse)
     val (result, pduPacker) = expected.unpack(expected.pack)
 
-    result should equal (expected)
-    result.pack should equal (expected.pack)
-    pduPacker should equal (bindResponse)
+    result should equal(expected)
+    result.pack should equal(expected.pack)
+    pduPacker should equal(bindResponse)
   }
+
+  "A BindTransceiverResponse PDU (with TLV)" should "equal an Array of head ++ body (with TLV) when packed" in {
+    val head: Array[Int] = Array(
+      0, 0, 0, 26,
+      128, 0, 0, 9,
+      0, 0, 0, 0,
+      0, 0, 0, 1
+    )
+    val body: Array[Int] = Array(97, 98, 99, 100, 0, 2, 16, 0, 1, 52)
+
+    val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val expected = head ++ body
+    val result = PDU(BIND_TRANSCEIVER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
+    result should equal(expected)
+  }
+
+
+  "A BindTransceiverResponse PDU" should "equal BindTransceiverResponse when packed and unpacked" in {
+    val head: Array[Int] = Array(
+      0, 0, 0, 26,
+      128, 0, 0, 9,
+      0, 0, 0, 0,
+      0, 0, 0, 1
+    )
+    val body: Array[Int] = Array(97, 98, 99, 100, 0, 2, 16, 0)
+    val bindResponse = BindResponse("abcd")
+    val expected = PDU(BIND_TRANSCEIVER_RESP, ESME_ROK, 0x00000001, bindResponse)
+
+    val (result, pduPacker) = expected.unpack(expected.pack)
+
+    result should equal(expected)
+    result.pack should equal(expected.pack)
+    pduPacker should equal(bindResponse)
+  }
+
 }
