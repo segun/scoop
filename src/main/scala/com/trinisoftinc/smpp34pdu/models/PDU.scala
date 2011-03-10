@@ -35,8 +35,6 @@ case class PDU(commandID: Int, commandStatus: Int,
       x <- 0 to header.length by 4
     } yield (header.slice(x, x + 4))
 
-
-
     val len = splitted(0)
     val commandId = binary2Int(splitted(1))
     val commandStatus = binary2Int(splitted(2))

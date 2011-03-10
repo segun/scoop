@@ -113,7 +113,6 @@ object PDUData {
   }
 
   def date2RelativeDate(yy: Int = 0, MM: Int = 0, dd: Int = 0, hh: Int = 0, mm: Int = 0, ss: Int = 0): Array[Int] = {
-
     val date = "" +
       prependZeroTo(yy) +
       prependZeroTo(MM) +

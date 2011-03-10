@@ -110,10 +110,13 @@ case class SubmitSM(serviceType: String = "",
       sshort2Binary(smLength) ++
       string2Binary(shortMessage, 254)
 
-    val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
-    //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
-
-    body ++ tlvs
+    if (!tlv.isEmpty) {
+      //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
+      val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
+      body ++ tlvs
+    } else {
+      body
+    }
   }
 
   def unpack(data: Array[Int]): PDUPacker = {
@@ -124,8 +127,8 @@ case class SubmitSM(serviceType: String = "",
     val (destinationAddr1: String, data6: Array[Int]) = (binary2String(data5.takeWhile(_ != 0)), data5.dropWhile(_ != 0).tail)
     val (esmClass1, protocolId1, data7: Array[Int]) = (binary2SShort(data6.head), binary2SShort(data6.tail.head), data6.tail.tail)
     val (priorityFlag1, data71: Array[Int]) = (binary2SShort(data7.head), data7.tail)
-    val (scheduleDeliveryTime1: String, data8: Array[Int]) = (binary2String(data71.takeWhile(_ != 0)), data71.dropWhile(_ != 0))
-    val (validityPeriod1: String, data9: Array[Int]) = (binary2String(data8.takeWhile(_ != 0)), data8.dropWhile(_ != 0))
+    val (scheduleDeliveryTime1: String, data8: Array[Int]) = (binary2String(data71.takeWhile(_ != 0)), data71.dropWhile(_ != 0).tail)
+    val (validityPeriod1: String, data9: Array[Int]) = (binary2String(data8.takeWhile(_ != 0)), data8.dropWhile(_ != 0).tail)
     val (registeredDelivery1, replaceIfPresent1, data10: Array[Int]) = (binary2SShort(data9.head), binary2SShort(data9.tail.head), data9.tail.tail)
     val (dataCoding1, smDefaultMsgId1, data11: Array[Int]) = (binary2SShort(data10.head), binary2SShort(data10.tail.head), data10.tail.tail)
     val (smLength1, data12: Array[Int]) = (binary2SShort(data11.head), data11.tail)
@@ -154,7 +157,7 @@ case class SubmitSM(serviceType: String = "",
   }
 
   private def getTLV(data: Array[Int]): Array[TLV] = {
-    if(data.isEmpty) Array.empty
+    if (data.isEmpty) Array.empty
     else {
       val tag = data.take(2)
       val (tlv: TLV, rem: Array[Int]) = takeTLV(binary2Short(tag), data)
