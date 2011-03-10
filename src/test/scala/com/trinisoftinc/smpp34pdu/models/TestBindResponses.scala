@@ -24,7 +24,7 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
 
     val body: Array[Int] = Array(97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 0, 2, 16, 0, 1, 52)
 
-    val bindResponse = BindResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val bindResponse = BindResponse("abcdefghij", TLV(ScInterfaceVersion, INTERFACE_VERSION))
     val expected = head ++ body
     val result = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
     result should equal(expected)
@@ -46,7 +46,7 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
   }
 
   "A BindTransmitterResponse PDU" should "equal BindTransmitterResponse when packed and unpacked" in {
-    val bindResponse = BindResponse("abcdefghij", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val bindResponse = BindResponse("abcdefghij", TLV(ScInterfaceVersion, INTERFACE_VERSION))
     val expected = PDU(BIND_TRANSMITTER_RESP, ESME_ROK, 0x00000001, bindResponse)
     val (result, pduPacker) = expected.unpack(expected.pack)
 
@@ -63,7 +63,7 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
       0, 0, 0, 1
     )
     val body: Array[Int] = Array(97, 98, 99, 100, 0, 2, 16, 0, 1, 52)
-    val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val bindResponse = BindResponse("abcd", TLV(ScInterfaceVersion, INTERFACE_VERSION))
     val expected = head ++ body
     val result = PDU(BIND_RECEIVER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
     result should equal(expected)
@@ -84,7 +84,7 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
   }
 
   "A BindRecieverResponse PDU" should "equal BindRecieverResponse when packed and unpacked" in {
-    val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val bindResponse = BindResponse("abcd", TLV(ScInterfaceVersion, INTERFACE_VERSION))
     val expected = PDU(BIND_RECEIVER_RESP, ESME_ROK, 0x00000001, bindResponse)
     val (result, pduPacker) = expected.unpack(expected.pack)
 
@@ -102,7 +102,7 @@ class TestBindResponses extends FlatSpec with ShouldMatchers {
     )
     val body: Array[Int] = Array(97, 98, 99, 100, 0, 2, 16, 0, 1, 52)
 
-    val bindResponse = BindResponse("abcd", TLV(scInterfaceVersion, INTERFACE_VERSION))
+    val bindResponse = BindResponse("abcd", TLV(ScInterfaceVersion, INTERFACE_VERSION))
     val expected = head ++ body
     val result = PDU(BIND_TRANSCEIVER_RESP, ESME_ROK, 0x00000001, bindResponse).pack
     result should equal(expected)

@@ -61,7 +61,7 @@ class TestPDUData extends FlatSpec with ShouldMatchers {
     result should equal (expected)
   }
 
-  "cstring2Binary" should "guve an Array of Bytes, padded with 0" in {
+  "cstring2Binary" should "gve an Array of Bytes, padded with 0" in {
     val expected: Array[Byte] = Array(111, 108, 117, 0)
     val result = cstring2Binary("olu", 5)
 
@@ -75,6 +75,7 @@ class TestPDUData extends FlatSpec with ShouldMatchers {
     result2 should equal (expected2)
   }
 
+
   "string2Binary" should "give an Array of Bytes" in {
     val expected: Array[Byte] = Array(111, 108, 117)
     val result = string2Binary("olu", 5)
@@ -86,5 +87,23 @@ class TestPDUData extends FlatSpec with ShouldMatchers {
     val result2 = string2Binary("olu", 2)
 
     result2 should equal (expected2)
+  }
+
+  "date2AbsoluteDate" should "give an Array of Bytes" in {
+    val cal = new java.util.GregorianCalendar();
+    cal.set(2011, 0, 1, 15, 30, 3)
+    val date = cal.getTime
+    val expected = Array(49, 49, 48, 49, 48, 49, 49, 53, 51, 48, 48, 51, 48, 48, 49, 43) //
+    // "1101011530030001+"
+    val result = date2AbsoluteDate(date)
+    result should equal (expected)
+  }
+
+  "date2RelativeDate" should "give an Array of Bytes" in {
+    val expected = Array(48, 48, 48, 48, 48, 48, 48, 48, 49, 53, 48, 48, 48, 48, 48, 82) //
+    // "15mins = 49, 53"
+    val result = date2RelativeDate(mm = 15)
+    result should equal (expected)
+
   }
 }

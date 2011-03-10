@@ -12,13 +12,13 @@ case class TLV(tag: Short = ZERO.asInstanceOf[Short], value: Any = ZERO) {
 
   def pack(): Array[Int] = {
     tag match {
-      case n if(n == scInterfaceVersion) => pack(1)
+      case ScInterfaceVersion => pack(1)
     }
   }
 
   private def pack(len: Short): Array[Int] = {
     tag match {
-      case n if(n == scInterfaceVersion) =>
+      case ScInterfaceVersion =>
         short2Binary(tag.asInstanceOf[Short]) ++ short2Binary(len) ++ sshort2Binary(INTERFACE_VERSION)
     }
   }
@@ -31,7 +31,7 @@ case class TLV(tag: Short = ZERO.asInstanceOf[Short], value: Any = ZERO) {
       throw new IndexOutOfBoundsException("value is not of the correct length")
     }
     binary2Short(tag) match {
-      case n if (n == scInterfaceVersion) => TLV(binary2Short(tag), binary2SShort(value))
+      case ScInterfaceVersion => TLV(binary2Short(tag), binary2SShort(value))
     }
   }
 }
