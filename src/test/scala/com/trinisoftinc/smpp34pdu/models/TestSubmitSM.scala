@@ -10,7 +10,6 @@ package com.trinisoftinc.smpp34pdu.models
 
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
-import com.trinisoftinc.smpp34pdu.models._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
