@@ -34,8 +34,8 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
     0, 0, 0, 1
   )
 
-  val sourceAddr = Address(2, 1, "abcd")
-  val destAddr = Address(2, 1, "efgh")
+  val sourceAddr = SMEAddress(2, 1, "abcd")
+  val destAddr = SMEAddress(2, 1, "efgh")
 
   val cal = new java.util.GregorianCalendar();
   cal.set(2011, 0, 1, 15, 30, 3)
@@ -43,7 +43,6 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
 
   val sdt = binary2String(date2AbsoluteDate(date))
   val vp = binary2String(date2RelativeDate(dd = 14))
-
 
   "A SubmitSM PDU" should "equal an Array of head ++ body" in {
     val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")

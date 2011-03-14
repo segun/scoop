@@ -9,20 +9,32 @@ package com.trinisoftinc.smpp34pdu.models
  */
 
 import com.trinisoftinc.smpp34pdu.util.PDUData._
-case class Address(ton: Short = 0,
-              npi: Short = 0,
-              address: String = "") {
+import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
-  def getBytes(): Array[Int] = {
-      sshort2Binary(ton) ++ sshort2Binary(npi) ++ cstring2Binary(address, 21)
-  }
-
-  /**
-   * returns the Address Object and the length of the whole address object
-   */
-  def fromBytes(data: Array[Int]): Tuple2[Address, Int] = {
-    val (ton1, npi1, data1: Array[Int]) = (binary2SShort(data.head), binary2SShort(data.tail.head), data.tail.tail)
-    val (addr1: String, data2: Array[Int]) = (binary2String(data1.takeWhile(_ != 0)), data1.dropWhile(_ != 0).tail)
-    (Address(ton1, npi1), data.length - data2.length)
+class Address(df: Int = 1) {
+  def destFlag = df
+  def getBytes: Array[Int] = {
+    Array.empty
   }
 }
+
+case class SMEAddress(ton: Short = 0, npi: Short = 0, address: String = "", df: Int = 1) extends Address(df) {
+  override def getBytes: Array[Int] = {
+    if (destFlag == SMEAddressFlag) {
+      sshort2Binary(ton) ++ sshort2Binary(npi) ++ cstring2Binary(address, 21)
+    } else {
+      throw new MatchError("Destination Flag for this Address should be " + SMEAddressFlag + ", but it's " + df)
+    }
+  }
+}
+
+case class DistributionList(dlName: String = "", df: Int = 2) extends Address(df) {
+  override def getBytes: Array[Int] = {
+    if(destFlag == DistributionListFlag) {
+    cstring2Binary(dlName, 21)
+    } else {
+      throw new MatchError("Destination Flag for this Address should be " + DistributionListFlag + ", but it's " + df)
+    }
+  }
+}
+

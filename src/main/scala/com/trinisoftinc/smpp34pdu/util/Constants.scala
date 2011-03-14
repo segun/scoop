@@ -148,9 +148,13 @@ object SMPPConstants {
   val USSRConfirm = 18
   val USSNConfirm = 19
 
+  val SMEAddressFlag: Short = 1
+  val DistributionListFlag: Short = 1
+
 
   val DEFAULTCSTRING = ""
   val INTERFACE_VERSION: Short = 0x34
   val HEADEROCTETSIZE = 0x10 //16 in hexadecimal
+  val MAX_DEST_ADDRESSES = 254
   val ZERO = 0x00000000
 }

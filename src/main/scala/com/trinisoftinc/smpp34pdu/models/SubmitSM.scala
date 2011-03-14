@@ -12,8 +12,8 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 
 case class SubmitSM(serviceType: String = "",
-                    sourceAddress: Address,
-                    destAddress: Address,
+                    sourceAddress: Address = SMEAddress(),
+                    destAddress: Address = SMEAddress(),
                     esmClass: Short = 0,
                     protocolId: Short = 0,
                     priorityFlag: Short = 0,
@@ -25,66 +25,7 @@ case class SubmitSM(serviceType: String = "",
                     smDefaultMsgId: Short = 0,
                     smLength: Short = 0,
                     shortMessage: String = "",
-                    tlv: Array[TLV] = Array.empty)
-  extends PDUPacker {
-
-  def takeTLV(tlvTag: Short, data: Array[Int]): Tuple2[TLV, Array[Int]] = {
-    tlvTag match {
-      case UserMessageReference => (TLV().unpack(data.take(6)), data.drop(6))
-      case SourcePort => (TLV().unpack(data.take(6)), data.drop(6))
-      case SourceAddressSubunit => (TLV().unpack(data.take(5)), data.drop(5))
-      case DestinationPort => (TLV().unpack(data.take(6)), data.drop(6))
-      case DestinationAddressSubunit => (TLV().unpack(data.take(5)), data.drop(5))
-      case SarMsgRefNum => (TLV().unpack(data.take(6)), data.drop(6))
-      case SarTotalSegments => (TLV().unpack(data.take(5)), data.drop(5))
-      case SarSegmentSeqnum => (TLV().unpack(data.take(5)), data.drop(5))
-      case MoreMessagesToSend => (TLV().unpack(data.take(5)), data.drop(5))
-      case PayLoadType => (TLV().unpack(data.take(5)), data.drop(5))
-      case MessagePayload => {
-        //first 2 bytes is tag, next two is length
-        val len = binary2Short(data.drop(2).take(2))
-        val totalLength = len + 4;
-        (TLV().unpack(data.take(totalLength)), data.drop(totalLength))
-      }
-      case PrivacyIndicator => (TLV().unpack(data.take(5)), data.drop(5))
-      case CallBackNum => {
-        //first 2 bytes is tag, next two is length
-        val len = binary2Short(data.drop(2).take(2))
-        val totalLength = len + 4;
-        (TLV().unpack(data.take(totalLength)), data.drop(totalLength))
-      }
-      case CallBackNumPresInd => (TLV().unpack(data.take(5)), data.drop(5))
-      case CallBackNumAtag => {
-        //first 2 bytes is tag, next two is length
-        val len = binary2Short(data.drop(2).take(2))
-        val totalLength = len + 4;
-        (TLV().unpack(data.take(totalLength)), data.drop(totalLength))
-      }
-      case SourceSubAddress => {
-        //first 2 bytes is tag, next two is length
-        val len = binary2Short(data.drop(2).take(2))
-        val totalLength = len + 4;
-        (TLV().unpack(data.take(totalLength)), data.drop(totalLength))
-      }
-      case DestinationSubAddress => {
-        //first 2 bytes is tag, next two is length
-        val len = binary2Short(data.drop(2).take(2))
-        val totalLength = len + 4;
-        (TLV().unpack(data.take(totalLength)), data.drop(totalLength))
-      }
-      case UserResponseCode => (TLV().unpack(data.take(5)), data.drop(5))
-      case DisplayTime => (TLV().unpack(data.take(5)), data.drop(5))
-      case SmsSignal => (TLV().unpack(data.take(6)), data.drop(6))
-      case MsValidity => (TLV().unpack(data.take(5)), data.drop(5))
-      case MsMsgWaitFacilities => (TLV().unpack(data.take(5)), data.drop(5))
-      case NumberOfMessages => (TLV().unpack(data.take(5)), data.drop(5))
-      case AlertOnMessageDelivery => (TLV().unpack(data.take(4)), data.drop(4))
-      case LanguageIndicator => (TLV().unpack(data.take(5)), data.drop(5))
-      case ItsReplyType => (TLV().unpack(data.take(5)), data.drop(5))
-      case ItsSessionInfo => (TLV().unpack(data.take(6)), data.drop(6))
-      case UssdServiceOp => (TLV().unpack(data.take(5)), data.drop(5))
-    }
-  }
+                    tlv: Array[TLV] = Array.empty) extends PDUPacker with Submit {
 
   def pack(): Array[Int] = {
     val body: Array[Int] = cstring2Binary(serviceType, 6) ++
@@ -127,8 +68,8 @@ case class SubmitSM(serviceType: String = "",
     val (shortMessage1, tlvs: Array[Int]) = (binary2String(data12.take(smLength1)), data12.drop(smLength1))
     val tlv1: Array[TLV] = getTLV(tlvs)
 
-    val sourceAddress1 = Address(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
-    val destAddress1 = Address(destAddrTon1, destAddrNpi1, destinationAddr1)
+    val sourceAddress1 = SMEAddress(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
+    val destAddress1 = SMEAddress(destAddrTon1, destAddrNpi1, destinationAddr1)
 
     return SubmitSM(serviceType1,
       sourceAddress1,
@@ -146,14 +87,5 @@ case class SubmitSM(serviceType: String = "",
       shortMessage1,
       tlv1
     )
-  }
-
-  private def getTLV(data: Array[Int]): Array[TLV] = {
-    if (data.isEmpty) Array.empty
-    else {
-      val tag = data.take(2)
-      val (tlv: TLV, rem: Array[Int]) = takeTLV(binary2Short(tag), data)
-      Array(tlv) ++ getTLV(rem)
-    }
   }
 }
