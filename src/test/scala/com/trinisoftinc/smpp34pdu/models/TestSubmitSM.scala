@@ -34,14 +34,19 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
     0, 0, 0, 1
   )
 
-  "A SubmitSM PDU" should "equal an Array of head ++ body" in {
-    val cal = new java.util.GregorianCalendar();
-    cal.set(2011, 0, 1, 15, 30, 3)
-    val date = cal.getTime
+  val sourceAddr = Address(2, 1, "abcd")
+  val destAddr = Address(2, 1, "efgh")
 
-    val sdt = binary2String(date2AbsoluteDate(date))
-    val vp = binary2String(date2RelativeDate(dd = 14))
-    val submit_sm = SubmitSM("CMT", 2, 1, "abcd", 2, 1, "efgh", 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
+  val cal = new java.util.GregorianCalendar();
+  cal.set(2011, 0, 1, 15, 30, 3)
+  val date = cal.getTime
+
+  val sdt = binary2String(date2AbsoluteDate(date))
+  val vp = binary2String(date2RelativeDate(dd = 14))
+
+
+  "A SubmitSM PDU" should "equal an Array of head ++ body" in {
+    val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
     val pdu = PDU(SUBMIT_SM, ESME_ROK, 0x00000001, submit_sm)
     val result = pdu.pack
     val expected = head ++ body
@@ -49,18 +54,12 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
   }
 
   it should "equal a SubmitSM PDU after packing and unpacking" in {
-    val cal = new java.util.GregorianCalendar();
-    cal.set(2011, 0, 1, 15, 30, 3)
-    val date = cal.getTime
-
-    val sdt = binary2String(date2AbsoluteDate(date))
-    val vp = binary2String(date2RelativeDate(dd = 14))
-    val submit_sm = SubmitSM("CMT", 2, 1, "abcd", 2, 1, "efgh", 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
+    val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
     val pdu = PDU(SUBMIT_SM, ESME_ROK, 0x00000001, submit_sm)
     val (result, pduPacker) = pdu.unpack(pdu.pack)
     pduPacker.asInstanceOf[SubmitSM].serviceType should equal (submit_sm.serviceType)
-    pduPacker.asInstanceOf[SubmitSM].sourceAddr should equal (submit_sm.sourceAddr)
-    pduPacker.asInstanceOf[SubmitSM].destinationAddr should equal (submit_sm.destinationAddr)
+    pduPacker.asInstanceOf[SubmitSM].sourceAddress should equal (submit_sm.sourceAddress)
+    pduPacker.asInstanceOf[SubmitSM].destAddress should equal (submit_sm.destAddress)
     pduPacker.asInstanceOf[SubmitSM].shortMessage should equal (submit_sm.shortMessage)
     pduPacker.asInstanceOf[SubmitSM].smLength should equal (submit_sm.smLength)
     pduPacker.asInstanceOf[SubmitSM].validityPeriod should equal (submit_sm.validityPeriod)

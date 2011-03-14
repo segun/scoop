@@ -12,12 +12,8 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 
 case class SubmitSM(serviceType: String = "",
-                    sourceAddrTon: Short = 0,
-                    sourceAddrNpi: Short = 0,
-                    sourceAddr: String = "",
-                    destAddrTon: Short = 0,
-                    destAddrNpi: Short = 0,
-                    destinationAddr: String = "",
+                    sourceAddress: Address,
+                    destAddress: Address,
                     esmClass: Short = 0,
                     protocolId: Short = 0,
                     priorityFlag: Short = 0,
@@ -92,12 +88,8 @@ case class SubmitSM(serviceType: String = "",
 
   def pack(): Array[Int] = {
     val body: Array[Int] = cstring2Binary(serviceType, 6) ++
-      sshort2Binary(sourceAddrTon) ++
-      sshort2Binary(sourceAddrNpi) ++
-      cstring2Binary(sourceAddr, 21) ++
-      sshort2Binary(destAddrTon) ++
-      sshort2Binary(destAddrNpi) ++
-      cstring2Binary(destinationAddr, 21) ++
+      sourceAddress.getBytes ++
+      destAddress.getBytes ++
       sshort2Binary(esmClass) ++
       sshort2Binary(protocolId) ++
       sshort2Binary(priorityFlag) ++
@@ -134,13 +126,13 @@ case class SubmitSM(serviceType: String = "",
     val (smLength1, data12: Array[Int]) = (binary2SShort(data11.head), data11.tail)
     val (shortMessage1, tlvs: Array[Int]) = (binary2String(data12.take(smLength1)), data12.drop(smLength1))
     val tlv1: Array[TLV] = getTLV(tlvs)
+
+    val sourceAddress1 = Address(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
+    val destAddress1 = Address(destAddrTon1, destAddrNpi1, destinationAddr1)
+
     return SubmitSM(serviceType1,
-      sourceAddrTon1,
-      sourceAddrNpi1,
-      sourceAddr1,
-      destAddrTon1,
-      destAddrNpi1,
-      destinationAddr1,
+      sourceAddress1,
+      destAddress1,
       esmClass1,
       protocolId1,
       priorityFlag1,
