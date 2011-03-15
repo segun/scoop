@@ -70,12 +70,24 @@ trait  Submit {
     }
   }
 
+/*
   protected def getTLV(data: List[Int]): List[TLV] = {
     if (data.isEmpty) List.empty
     else {
       val tag = data.take(2)
       val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
       List(tlv) ++ getTLV(rem)
+    }
+  }
+*/
+
+  protected def getTLV(data: List[Int], acc: List[TLV] = Nil): List[TLV] = {
+    if(data.isEmpty) acc.reverse
+    else {
+      val tag = data.take(2)
+      val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
+      val thisAcc = List(tlv) ++ acc
+      getTLV(rem)
     }
   }
 }

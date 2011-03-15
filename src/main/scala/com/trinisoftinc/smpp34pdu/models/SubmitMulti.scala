@@ -36,23 +36,43 @@ case class SubmitMulti(serviceType: String = "",
     }
   }
 
-  private def getAddresses(data: List[Int], count: Int, len: Int): Tuple2[List[Address], List[Int]] = {
+  private def getAddresses(data: List[Int], count: Int, len: Int,
+                           addresses: List[Address] = Nil,
+                           positions: List[Int] = Nil): (List[Address], List[Int]) = {
     if (count == len) {
-      (List.empty, List.empty)
+      (addresses.reverse, positions.reverse)
     } else {
-      val byteAddress = data.takeWhile(_ != 0)
-      val newData = data.dropWhile(_ != 0).tail
-      val newCount = count + 1
-      val newPosition = byteAddress.length + 1
-      val destFlag = byteAddress.head
-      val nextIter = getAddresses(newData, newCount, len)
-      if (destFlag == SMEAddressFlag) {
-        (SMEAddress().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
-      } else {
-        (DistributionList().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
+      val (addr, rest) = data.span(_ != 0)
+      val newdata = rest.tail
+      val position = addr.length + 1
+      val flag = addr.head
+      val address = {
+        if (flag == SMEAddressFlag) SMEAddress().fromBytes(addr)
+        else DistributionList().fromBytes(addr)
       }
+      getAddresses(newdata, count + 1, len, address :: addresses, position :: positions)
     }
   }
+
+  /*
+    private def getAddresses(data: List[Int], count: Int, len: Int): Tuple2[List[Address], List[Int]] = {
+      if (count == len) {
+        (List.empty, List.empty)
+      } else {
+        val byteAddress = data.takeWhile(_ != 0)
+        val newData = data.dropWhile(_ != 0).tail
+        val newCount = count + 1
+        val newPosition = byteAddress.length + 1
+        val destFlag = byteAddress.head
+        val nextIter = getAddresses(newData, newCount, len)
+        if (destFlag == SMEAddressFlag) {
+          (SMEAddress().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
+        } else {
+          (DistributionList().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
+        }
+      }
+    }
+  */
 
   def pack(): List[Int] = {
     val body: List[Int] = cstring2Binary(serviceType, 6) ++
