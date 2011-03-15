@@ -39,3 +39,23 @@ case class BindRequest(systemId: String = "",
     BindRequest(sid1, pwd1, sst1, itv1, adt1, adn1, adr1)
   }
 }
+
+case class BindResponse(systemID: String = "", scInterfaceVersion: TLV = TLV()) extends PDUPacker {
+  def pack(): List[Int] = {
+    if (scInterfaceVersion.tag == ZERO) {
+      cstring2Binary(systemID, 16)
+    } else {
+      cstring2Binary(systemID, 16) ++ scInterfaceVersion.pack
+    }
+  }
+
+  def unpack(data: List[Int]): BindResponse = {
+    val (sid: String, data2: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
+    if (data2.length > 0) {
+      val siv: TLV = new TLV().unpack(data2)
+      BindResponse(sid, siv)
+    } else {
+      BindResponse(sid)
+    }
+  }
+}

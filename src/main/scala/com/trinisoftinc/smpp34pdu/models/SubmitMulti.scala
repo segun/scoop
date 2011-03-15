@@ -11,24 +11,8 @@ package com.trinisoftinc.smpp34pdu.models
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 
-case class SubmitMulti(serviceType: String = "",
-                       sourceAddress: Address = SMEAddress(),
-                       destAddresses: List[Address] = List.empty,
-                       esmClass: Short = 0,
-                       protocolId: Short = 0,
-                       priorityFlag: Short = 0,
-                       scheduleDeliveryTime: String = "",
-                       validityPeriod: String = "",
-                       registeredDelivery: Short = 0,
-                       replaceIfPresent: Short = 0,
-                       dataCoding: Short = 0,
-                       smDefaultMsgId: Short = 0,
-                       smLength: Short = 0,
-                       shortMessage: String = "",
-                       tlv: List[TLV] = List.empty) extends PDUPacker with Submit {
-
-
-  def destAddressesToBytes(): List[Int] = {
+object SubmitMulti {
+  def destAddressesToBytes(destAddresses: List[Address]): List[Int] = {
     if (destAddresses.length <= MAX_DEST_ADDRESSES) {
       (new Address().getBytes /: destAddresses)((a, b) => a ++ (b.destFlag :: b.getBytes))
     } else {
@@ -36,7 +20,7 @@ case class SubmitMulti(serviceType: String = "",
     }
   }
 
-  private def getAddresses(data: List[Int], count: Int, len: Int,
+  def getAddresses(data: List[Int], count: Int, len: Int,
                            addresses: List[Address] = Nil,
                            positions: List[Int] = Nil): (List[Address], List[Int]) = {
     if (count == len) {
@@ -53,6 +37,25 @@ case class SubmitMulti(serviceType: String = "",
       getAddresses(newdata, count + 1, len, address :: addresses, position :: positions)
     }
   }
+
+}
+
+case class SubmitMulti(serviceType: String = "",
+                       sourceAddress: Address = SMEAddress(),
+                       destAddresses: List[Address] = List.empty,
+                       esmClass: Short = 0,
+                       protocolId: Short = 0,
+                       priorityFlag: Short = 0,
+                       scheduleDeliveryTime: String = "",
+                       validityPeriod: String = "",
+                       registeredDelivery: Short = 0,
+                       replaceIfPresent: Short = 0,
+                       dataCoding: Short = 0,
+                       smDefaultMsgId: Short = 0,
+                       smLength: Short = 0,
+                       shortMessage: String = "",
+                       tlv: List[TLV] = List.empty) extends PDUPacker with Submit {
+
 
   /*
     private def getAddresses(data: List[Int], count: Int, len: Int): Tuple2[List[Address], List[Int]] = {
@@ -78,7 +81,7 @@ case class SubmitMulti(serviceType: String = "",
     val body: List[Int] = cstring2Binary(serviceType, 6) ++
       sourceAddress.getBytes ++
       sshort2Binary(destAddresses.length.asInstanceOf[Short]) ++
-      destAddressesToBytes ++
+      SubmitMulti.destAddressesToBytes(destAddresses) ++
       sshort2Binary(esmClass) ++
       sshort2Binary(protocolId) ++
       sshort2Binary(priorityFlag) ++
@@ -105,7 +108,7 @@ case class SubmitMulti(serviceType: String = "",
     val (sourceAddrTon1, sourceAddrNpi1, data3: List[Int]) = (binary2SShort(data2.head), binary2SShort(data2.tail.head), data2.tail.tail)
     val (sourceAddr1: String, data4: List[Int]) = (binary2String(data3.takeWhile(_ != 0)), data3.dropWhile(_ != 0).tail)
     val (destAddressesLen: Short, data5: List[Int]) = (data4.head.asInstanceOf[Short], data4.tail)
-    val (destAddresses1: List[Address], position: List[Int]) = getAddresses(data5, 0, destAddressesLen)
+    val (destAddresses1: List[Address], position: List[Int]) = SubmitMulti.getAddresses(data5, 0, destAddressesLen)
     val data6 = data5.drop(position.sum)
     val (esmClass1, protocolId1, data7: List[Int]) = (binary2SShort(data6.head), binary2SShort(data6.tail.head), data6.tail.tail)
     val (priorityFlag1, data71: List[Int]) = (binary2SShort(data7.head), data7.tail)
@@ -135,5 +138,20 @@ case class SubmitMulti(serviceType: String = "",
       shortMessage1,
       tlv1
     )
+  }
+}
+
+case class SubmitMultiResponse(messageId: String, noUnsuccess: Short, unsuccessSME: List[Address]) extends PDUPacker {
+  def pack(): List[Int] = {
+    cstring2Binary(messageId, 65) ++
+    sshort2Binary(noUnsuccess) ++
+    SubmitMulti.destAddressesToBytes(unsuccessSME)
+  }
+
+  def unpack(data: List[Int]): PDUPacker = {
+    val (messageId1: String, data2: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
+    val (noUnsuccess1: Short, data3: List[Int]) = (binary2SShort(data.head), data.tail)
+    val (unsuccessSME1: List[Address], _) = SubmitMulti.getAddresses(data3, 0, noUnsuccess1)
+    SubmitMultiResponse(messageId1, noUnsuccess1, unsuccessSME1)
   }
 }
