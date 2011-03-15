@@ -15,16 +15,16 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 
 class TestSubmitSMResponse extends FlatSpec with ShouldMatchers {
-  val head: Array[Int] = Array(
+  val head: List[Int] = List(
     0, 0, 0, 22,
     128, 0, 0, 4,
     0, 0, 0, 0,
     0, 0, 0, 1
   )
 
-  val body: Array[Int] = Array(97,98,99,100,101, 0)
+  val body: List[Int] = List(97,98,99,100,101, 0)
 
-  "A SubmitSMResponse" should "equal an Array of head ++ body when packed" in {
+  "A SubmitSMResponse" should "equal an List of head ++ body when packed" in {
     val ssmResponse = SubmitSMResponse("abcde")
     val expected = head ++ body
     val pdu = PDU(SUBMIT_SM_RESP, ESME_ROK, 0x00000001, ssmResponse)

@@ -14,7 +14,7 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 class TestSubmitSM extends FlatSpec with ShouldMatchers {
-  val body = Array(
+  val body = List(
     67, 77, 84, 0,
     2, 1,
     97, 98, 99, 100, 0,
@@ -27,7 +27,7 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
     104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100
   )
 
-  val head = Array(
+  val head = List(
     0, 0, 0, 87,
     0, 0, 0, 4,
     0, 0, 0, 0,
@@ -44,7 +44,7 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
   val sdt = binary2String(date2AbsoluteDate(date))
   val vp = binary2String(date2RelativeDate(dd = 14))
 
-  "A SubmitSM PDU" should "equal an Array of head ++ body" in {
+  "A SubmitSM PDU" should "equal an List of head ++ body" in {
     val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
     val pdu = PDU(SUBMIT_SM, ESME_ROK, 0x00000001, submit_sm)
     val result = pdu.pack

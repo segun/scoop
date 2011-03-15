@@ -18,7 +18,7 @@ case class BindRequest(systemId: String = "",
                                 addressTon: Short = 0x0001,
                                 addressNpi: Short = 0x0001,
                                 addressRange: String = "") extends PDUPacker {
-  def pack(): Array[Int] = {
+  def pack(): List[Int] = {
     cstring2Binary(systemId, 16) ++
       cstring2Binary(password, 9) ++
       cstring2Binary(systemType, 13) ++
@@ -28,13 +28,13 @@ case class BindRequest(systemId: String = "",
       cstring2Binary(addressRange, 41)
   }
 
-  def unpack(data: Array[Int]) = {
-    val (sid1: String, data2: Array[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
-    val (pwd1: String, data3: Array[Int]) = (binary2String(data2.takeWhile(_ != 0)), data2.dropWhile(_ != 0).tail)
-    val (sst1: String, data4: Array[Int]) = (binary2String(data3.takeWhile(_ != 0)), data3.dropWhile(_ != 0).tail)
-    val (itv1: Short, data5: Array[Int]) = (data4.head.asInstanceOf[Short], data4.tail)
-    val (adt1: Short, data6: Array[Int]) = (data5.head.asInstanceOf[Short], data5.tail)
-    val (adn1: Short, data7: Array[Int]) = (data6.head.asInstanceOf[Short], data6.tail)
+  def unpack(data: List[Int]) = {
+    val (sid1: String, data2: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
+    val (pwd1: String, data3: List[Int]) = (binary2String(data2.takeWhile(_ != 0)), data2.dropWhile(_ != 0).tail)
+    val (sst1: String, data4: List[Int]) = (binary2String(data3.takeWhile(_ != 0)), data3.dropWhile(_ != 0).tail)
+    val (itv1: Short, data5: List[Int]) = (data4.head.asInstanceOf[Short], data4.tail)
+    val (adt1: Short, data6: List[Int]) = (data5.head.asInstanceOf[Short], data5.tail)
+    val (adn1: Short, data7: List[Int]) = (data6.head.asInstanceOf[Short], data6.tail)
     val adr1: String = binary2String(data7.takeWhile(_ != 0))
     BindRequest(sid1, pwd1, sst1, itv1, adt1, adn1, adr1)
   }

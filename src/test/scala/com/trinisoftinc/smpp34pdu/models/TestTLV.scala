@@ -13,8 +13,8 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
  */
 
 class TestTLV extends FlatSpec with ShouldMatchers {
-  "A scInterfaceVersion TLV" should "return an Array of Bytes" in {
-    val expected = Array(2, 16, 0, 1, 52)
+  "A scInterfaceVersion TLV" should "return an List of Bytes" in {
+    val expected = List(2, 16, 0, 1, 52)
     val tlv = TLV(ScInterfaceVersion, INTERFACE_VERSION)
     val result = tlv.pack
 
@@ -24,7 +24,7 @@ class TestTLV extends FlatSpec with ShouldMatchers {
   it should "return a TLV if packed and unpacked" in {
     val expected = TLV(ScInterfaceVersion, INTERFACE_VERSION)
     val result = expected.unpack(expected.pack)
-    val result2 = expected.unpack(Array(2, 16, 0, 1, 52))
+    val result2 = expected.unpack(List(2, 16, 0, 1, 52))
 
     expected should equal (result)
     expected should equal (result2)

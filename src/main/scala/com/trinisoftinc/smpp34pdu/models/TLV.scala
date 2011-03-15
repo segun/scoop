@@ -10,20 +10,20 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 
 case class TLV(tag: Short = ZERO.asInstanceOf[Short], value: Any = ZERO) {
 
-  def pack(): Array[Int] = {
+  def pack(): List[Int] = {
     tag match {
       case ScInterfaceVersion => pack(1)
     }
   }
 
-  private def pack(len: Short): Array[Int] = {
+  private def pack(len: Short): List[Int] = {
     tag match {
       case ScInterfaceVersion =>
         short2Binary(tag.asInstanceOf[Short]) ++ short2Binary(len) ++ sshort2Binary(INTERFACE_VERSION)
     }
   }
 
-  def unpack(data: Array[Int]): TLV = {
+  def unpack(data: List[Int]): TLV = {
     var tag = data.slice(0, 2)
     var len = binary2Short(data.slice(2, 4))
     var value = data.splitAt(4)._2

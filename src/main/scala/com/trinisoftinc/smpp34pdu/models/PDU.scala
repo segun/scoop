@@ -9,8 +9,8 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 import com.trinisoftinc.smpp34pdu.util._
 
 trait PDUPacker {
-  def pack(): Array[Int]
-  def unpack(data: Array[Int]): PDUPacker
+  def pack(): List[Int]
+  def unpack(data: List[Int]): PDUPacker
 }
 
 case class PDU(commandID: Int, commandStatus: Int, 
@@ -20,7 +20,7 @@ case class PDU(commandID: Int, commandStatus: Int,
     this(0,0,0,null)
   }
 
-  def pack(): Array[Int] = {
+  def pack(): List[Int] = {
     val len = body.pack.length + SMPPConstants.HEADEROCTETSIZE
     int2Binary(len) ++
     int2Binary(commandID) ++
@@ -29,7 +29,7 @@ case class PDU(commandID: Int, commandStatus: Int,
     body.pack
   }
 
-  def unpack(data: Array[Int]): Tuple2[PDU, PDUPacker] = {
+  def unpack(data: List[Int]): Tuple2[PDU, PDUPacker] = {
     val header = data.slice(0, 16)
     var splitted = for {
       x <- 0 to header.length by 4

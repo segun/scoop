@@ -12,7 +12,7 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 
 class TestBinds extends FlatSpec with ShouldMatchers {
-  val body: Array[Int] = Array(
+  val body: List[Int] = List(
     97, 98, 99, 100, 101, 102, 103, 0,
     120, 121, 122, 0,
     67, 77, 84, 0,
@@ -22,8 +22,8 @@ class TestBinds extends FlatSpec with ShouldMatchers {
     0
   )
 
-  "A BindTransmitter PDU" should "equals an Array of head ++ body after packing" in {
-    val head: Array[Byte] = Array(
+  "A BindTransmitter PDU" should "equals an List of head ++ body after packing" in {
+    val head: List[Byte] = List(
       0, 0, 0, 36,
       0, 0, 0, 2,
       0, 0, 0, 0,
@@ -52,8 +52,8 @@ class TestBinds extends FlatSpec with ShouldMatchers {
     pduPacker should equal (bind)
   }
 
-  "A BindReciever PDU" should "equal an Array of head ++ body after packing" in {
-    val head: Array[Byte] = Array(
+  "A BindReciever PDU" should "equal an List of head ++ body after packing" in {
+    val head: List[Byte] = List(
       0, 0, 0, 36,
       0, 0, 0, 1,
       0, 0, 0, 0,
@@ -77,8 +77,8 @@ class TestBinds extends FlatSpec with ShouldMatchers {
     pduPacker should equal (bind)
   }
 
-  "A BindTransceiver PDU" should "equal an Array of head ++ body after packing" in {
-    val head: Array[Byte] = Array(
+  "A BindTransceiver PDU" should "equal an List of head ++ body after packing" in {
+    val head: List[Byte] = List(
       0, 0, 0, 36,
       0, 0, 0, 9,
       0, 0, 0, 0,

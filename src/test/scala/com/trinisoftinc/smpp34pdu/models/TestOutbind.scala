@@ -14,18 +14,18 @@ import org.scalatest.matchers.ShouldMatchers
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 
 class TestOutbind extends FlatSpec with ShouldMatchers {
-  val body = Array(
+  val body = List(
     97, 98, 99, 100, 0,
     120, 121, 122, 0
   )
-  val head: Array[Byte] = Array(
+  val head: List[Byte] = List(
     0, 0, 0, 25,
     0, 0, 0, 11,
     0, 0, 0, 0,
     0, 0, 0, 1
   )
 
-  "An Outbind PDU" should "equal an array of head ++ body when packed" in {
+  "An Outbind PDU" should "equal an List of head ++ body when packed" in {
     val expected = head ++ body
     val bind = Outbind("abcd", "xyz")
     val result = PDU(OUTBIND, ESME_ROK, 0x00000001, bind).pack

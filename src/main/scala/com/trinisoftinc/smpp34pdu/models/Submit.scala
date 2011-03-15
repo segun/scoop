@@ -12,7 +12,7 @@ import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 trait  Submit {
 
-  protected def takeTLV(tlvTag: Short, data: Array[Int]): Tuple2[TLV, Array[Int]] = {
+  protected def takeTLV(tlvTag: Short, data: List[Int]): Tuple2[TLV, List[Int]] = {
     tlvTag match {
       case UserMessageReference => (TLV().unpack(data.take(6)), data.drop(6))
       case SourcePort => (TLV().unpack(data.take(6)), data.drop(6))
@@ -70,12 +70,12 @@ trait  Submit {
     }
   }
 
-  protected def getTLV(data: Array[Int]): Array[TLV] = {
-    if (data.isEmpty) Array.empty
+  protected def getTLV(data: List[Int]): List[TLV] = {
+    if (data.isEmpty) List.empty
     else {
       val tag = data.take(2)
-      val (tlv: TLV, rem: Array[Int]) = takeTLV(binary2Short(tag), data)
-      Array(tlv) ++ getTLV(rem)
+      val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
+      List(tlv) ++ getTLV(rem)
     }
   }
 }
