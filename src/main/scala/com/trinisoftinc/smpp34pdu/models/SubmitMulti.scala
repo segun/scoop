@@ -13,7 +13,7 @@ import com.trinisoftinc.smpp34pdu.util.PDUData._
 
 case class SubmitMulti(serviceType: String = "",
                        sourceAddress: Address = SMEAddress(),
-                       destAddresses: Array[Address] = Array.empty,
+                       destAddresses: List[Address] = List.empty,
                        esmClass: Short = 0,
                        protocolId: Short = 0,
                        priorityFlag: Short = 0,
@@ -25,22 +25,39 @@ case class SubmitMulti(serviceType: String = "",
                        smDefaultMsgId: Short = 0,
                        smLength: Short = 0,
                        shortMessage: String = "",
-                       tlv: Array[TLV] = Array.empty) extends PDUPacker with Submit {
+                       tlv: List[TLV] = List.empty) extends PDUPacker with Submit {
 
 
-  def getAddressesAsByte(): Array[Int] = {
+  def destAddressesToBytes(): List[Int] = {
     if (destAddresses.length <= MAX_DEST_ADDRESSES) {
-      //val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
-      (new Address().getBytes /: destAddresses) (_ ++ _.getBytes)
+      (new Address().getBytes /: destAddresses)((a, b) => a ++ (b.destFlag :: b.getBytes))
     } else {
       throw new MatchError("Destination Addresses should not exceed" + MAX_DEST_ADDRESSES + " but is " + destAddresses.length)
     }
   }
 
-  def pack(): Array[Int] = {
-    val body: Array[Int] = cstring2Binary(serviceType, 6) ++
+  private def getAddresses(data: List[Int], count: Int, len: Int, position: Int): Tuple2[List[Address], Int] = {
+    if (count == len) {
+      (List.empty, position)
+    } else {
+      val byteAddress = data.takeWhile(_ != 0)
+      val newData = data.dropWhile(_ != 0).tail
+      val newCount = count + 1
+      val newPosition = position + byteAddress.length + 1
+      val destFlag = byteAddress.head
+      if (destFlag == SMEAddressFlag) {
+        (SMEAddress().fromBytes(byteAddress) :: getAddresses(newData, newCount, len, newPosition)._1, newPosition)
+      } else {
+        (DistributionList().fromBytes(byteAddress) :: getAddresses(newData, newCount, len, newPosition)._1, newPosition)
+      }
+    }
+  }
+
+  def pack(): List[Int] = {
+    val body: List[Int] = cstring2Binary(serviceType, 6) ++
       sourceAddress.getBytes ++
-      getAddressesAsByte ++
+      sshort2Binary(destAddresses.length.asInstanceOf[Short]) ++
+      destAddressesToBytes ++
       sshort2Binary(esmClass) ++
       sshort2Binary(protocolId) ++
       sshort2Binary(priorityFlag) ++
@@ -62,7 +79,40 @@ case class SubmitMulti(serviceType: String = "",
     }
   }
 
-  def unpack(data: Array[Int]) = {
-    this
+  def unpack(data: List[Int]) = {
+    val (serviceType1: String, data2: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
+    val (sourceAddrTon1, sourceAddrNpi1, data3: List[Int]) = (binary2SShort(data2.head), binary2SShort(data2.tail.head), data2.tail.tail)
+    val (sourceAddr1: String, data4: List[Int]) = (binary2String(data3.takeWhile(_ != 0)), data3.dropWhile(_ != 0).tail)
+    val (destAddressesLen: Short, data5: List[Int]) = (data4.head.asInstanceOf[Short], data4.tail)
+    val (destAddresses1: List[Address], position: Int) = getAddresses(data5, 0, destAddressesLen, 0)
+    val data6 = data5.drop(position)
+    val (esmClass1, protocolId1, data7: List[Int]) = (binary2SShort(data6.head), binary2SShort(data6.tail.head), data6.tail.tail)
+    val (priorityFlag1, data71: List[Int]) = (binary2SShort(data7.head), data7.tail)
+    val (scheduleDeliveryTime1: String, data8: List[Int]) = (binary2String(data71.takeWhile(_ != 0)), data71.dropWhile(_ != 0).tail)
+    val (validityPeriod1: String, data9: List[Int]) = (binary2String(data8.takeWhile(_ != 0)), data8.dropWhile(_ != 0).tail)
+    val (registeredDelivery1, replaceIfPresent1, data10: List[Int]) = (binary2SShort(data9.head), binary2SShort(data9.tail.head), data9.tail.tail)
+    val (dataCoding1, smDefaultMsgId1, data11: List[Int]) = (binary2SShort(data10.head), binary2SShort(data10.tail.head), data10.tail.tail)
+    val (smLength1, data12: List[Int]) = (binary2SShort(data11.head), data11.tail)
+    val (shortMessage1, tlvs: List[Int]) = (binary2String(data12.take(smLength1)), data12.drop(smLength1))
+    val tlv1: List[TLV] = getTLV(tlvs)
+
+    val sourceAddress1 = SMEAddress(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
+
+    SubmitMulti(serviceType1,
+      sourceAddress1,
+      destAddresses1,
+      esmClass1,
+      protocolId1,
+      priorityFlag1,
+      scheduleDeliveryTime1,
+      validityPeriod1,
+      registeredDelivery1,
+      replaceIfPresent1,
+      dataCoding1,
+      smDefaultMsgId1,
+      smLength1,
+      shortMessage1,
+      tlv1
+    )
   }
 }

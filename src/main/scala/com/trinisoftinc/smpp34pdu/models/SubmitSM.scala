@@ -71,7 +71,7 @@ case class SubmitSM(serviceType: String = "",
     val sourceAddress1 = SMEAddress(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
     val destAddress1 = SMEAddress(destAddrTon1, destAddrNpi1, destinationAddr1)
 
-    return SubmitSM(serviceType1,
+    SubmitSM(serviceType1,
       sourceAddress1,
       destAddress1,
       esmClass1,
