@@ -18,6 +18,8 @@ object SMPPConstants {
   val GENERIC_NACK = 0x80000000
   val SUBMIT_SM = 0x00000004
   val SUBMIT_SM_RESP = 0x80000004
+  val SUBMIT_MULTI = 0x00000021
+  val SUBMIT_MULTI_RESP = 0x80000021
 
   val ESME_ROK = 0x00000000
   val ESME_RINVMSGLEN = 0x00000001
@@ -149,7 +151,7 @@ object SMPPConstants {
   val USSNConfirm = 19
 
   val SMEAddressFlag: Short = 1
-  val DistributionListFlag: Short = 1
+  val DistributionListFlag: Short = 2
 
 
   val DEFAULTCSTRING = ""

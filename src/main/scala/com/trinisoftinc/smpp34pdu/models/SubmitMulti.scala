@@ -36,19 +36,20 @@ case class SubmitMulti(serviceType: String = "",
     }
   }
 
-  private def getAddresses(data: List[Int], count: Int, len: Int, position: Int): Tuple2[List[Address], Int] = {
+  private def getAddresses(data: List[Int], count: Int, len: Int): Tuple2[List[Address], List[Int]] = {
     if (count == len) {
-      (List.empty, position)
+      (List.empty, List.empty)
     } else {
       val byteAddress = data.takeWhile(_ != 0)
       val newData = data.dropWhile(_ != 0).tail
       val newCount = count + 1
-      val newPosition = position + byteAddress.length + 1
+      val newPosition = byteAddress.length + 1
       val destFlag = byteAddress.head
+      val nextIter = getAddresses(newData, newCount, len)
       if (destFlag == SMEAddressFlag) {
-        (SMEAddress().fromBytes(byteAddress) :: getAddresses(newData, newCount, len, newPosition)._1, newPosition)
+        (SMEAddress().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
       } else {
-        (DistributionList().fromBytes(byteAddress) :: getAddresses(newData, newCount, len, newPosition)._1, newPosition)
+        (DistributionList().fromBytes(byteAddress) :: nextIter._1, newPosition :: nextIter._2)
       }
     }
   }
@@ -84,8 +85,11 @@ case class SubmitMulti(serviceType: String = "",
     val (sourceAddrTon1, sourceAddrNpi1, data3: List[Int]) = (binary2SShort(data2.head), binary2SShort(data2.tail.head), data2.tail.tail)
     val (sourceAddr1: String, data4: List[Int]) = (binary2String(data3.takeWhile(_ != 0)), data3.dropWhile(_ != 0).tail)
     val (destAddressesLen: Short, data5: List[Int]) = (data4.head.asInstanceOf[Short], data4.tail)
-    val (destAddresses1: List[Address], position: Int) = getAddresses(data5, 0, destAddressesLen, 0)
-    val data6 = data5.drop(position)
+    val (destAddresses1: List[Address], position: List[Int]) = getAddresses(data5, 0, destAddressesLen)
+    val data6 = data5.drop(position.sum)
+    println("D5: " + data5)
+    println("D6: " + data6)
+    println("PS: " + position)
     val (esmClass1, protocolId1, data7: List[Int]) = (binary2SShort(data6.head), binary2SShort(data6.tail.head), data6.tail.tail)
     val (priorityFlag1, data71: List[Int]) = (binary2SShort(data7.head), data7.tail)
     val (scheduleDeliveryTime1: String, data8: List[Int]) = (binary2String(data71.takeWhile(_ != 0)), data71.dropWhile(_ != 0).tail)
