@@ -23,6 +23,18 @@ class Address(df: Int = 1) {
   }
 }
 
+case class UnsuccessfulAddress(ton: Short = 0, npi: Short = 0, address: String = "",
+                               errorStatusCode: Int = ESME_ROK) extends Address {
+  override def getBytes: List[Int] = {
+      sshort2Binary(ton) ++ sshort2Binary(npi) ++ cstring2Binary(address, 21) ++ int2Binary(errorStatusCode)
+  }
+
+  override def fromBytes(data1: List[Int]): UnsuccessfulAddress = {
+    val (sourceAddrTon1, sourceAddrNpi1, data2: List[Int]) = (binary2SShort(data1.head), binary2SShort(data1.tail.head), data1.tail.tail)
+    val (sourceAddr1: String, errorStatusCode1) = (binary2String(data2.takeWhile(_ != 0)), binary2Int(data2.dropWhile(_ != 0).tail))
+    UnsuccessfulAddress(sourceAddrTon1, sourceAddrNpi1, sourceAddr1, errorStatusCode1)
+  }
+}
 case class SMEAddress(ton: Short = 0, npi: Short = 0, address: String = "", df: Int = 1) extends Address(df) {
   override def getBytes: List[Int] = {
     if (destFlag == SMEAddressFlag) {

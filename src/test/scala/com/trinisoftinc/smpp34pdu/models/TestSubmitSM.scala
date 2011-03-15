@@ -56,16 +56,9 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
     val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world")
     val pdu = PDU(SUBMIT_SM, ESME_ROK, 0x00000001, submit_sm)
     val (result, pduPacker) = pdu.unpack(pdu.pack)
-    pduPacker.asInstanceOf[SubmitSM].serviceType should equal (submit_sm.serviceType)
-    pduPacker.asInstanceOf[SubmitSM].sourceAddress should equal (submit_sm.sourceAddress)
-    pduPacker.asInstanceOf[SubmitSM].destAddress should equal (submit_sm.destAddress)
-    pduPacker.asInstanceOf[SubmitSM].shortMessage should equal (submit_sm.shortMessage)
-    pduPacker.asInstanceOf[SubmitSM].smLength should equal (submit_sm.smLength)
-    pduPacker.asInstanceOf[SubmitSM].validityPeriod should equal (submit_sm.validityPeriod)
-    pduPacker.asInstanceOf[SubmitSM].scheduleDeliveryTime should equal (submit_sm.scheduleDeliveryTime)
 
-    result.commandID should equal (pdu.commandID)
-    result.commandStatus should equal (pdu.commandStatus)
-    result.sequenceNumber should equal (pdu.sequenceNumber)
+    result should equal (pdu)
+    pduPacker should equal (submit_sm)
+    pduPacker.pack should equal (submit_sm.pack)
   }
 }

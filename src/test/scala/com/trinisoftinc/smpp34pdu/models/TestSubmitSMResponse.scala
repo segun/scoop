@@ -39,5 +39,6 @@ class TestSubmitSMResponse extends FlatSpec with ShouldMatchers {
     val (result, pduPacker) = pdu.unpack(pdu.pack)
     result should equal (pdu)
     pduPacker should equal (ssmResponse)
+    pduPacker.pack should equal (ssmResponse.pack)
   }
 }

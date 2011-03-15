@@ -38,6 +38,31 @@ object SubmitMulti {
     }
   }
 
+  def getUnsuccessfulAddresses(data: List[Int], count: Int, len: Int,
+                           addresses: List[UnsuccessfulAddress] = Nil,
+                           positions: List[Int] = Nil): (List[UnsuccessfulAddress], List[Int]) = {
+    if (count == len) {
+      (addresses.reverse, positions.reverse)
+    } else {
+      val (addr, rest) = data.span(_ != 0)
+      val error = rest.take(5)
+      val newdata = rest.drop(5)
+      val position = addr.length + 1
+      val flag = addr.head
+      val address = {
+        UnsuccessfulAddress().fromBytes(addr ++ error)
+      }
+      getUnsuccessfulAddresses(newdata, count + 1, len, address :: addresses, position :: positions)
+    }
+  }
+
+  def unsuccessfulAddressesToBytes(unsuccessfulAddresses: List[UnsuccessfulAddress]): List[Int] = {
+    if (unsuccessfulAddresses.length <= MAX_DEST_ADDRESSES) {
+      (new Address().getBytes /: unsuccessfulAddresses)((a, b) => a ++ b.getBytes)
+    } else {
+      throw new MatchError("Destination Addresses should not exceed" + MAX_DEST_ADDRESSES + " but is " + unsuccessfulAddresses.length)
+    }
+  }
 }
 
 case class SubmitMulti(serviceType: String = "",
@@ -141,17 +166,17 @@ case class SubmitMulti(serviceType: String = "",
   }
 }
 
-case class SubmitMultiResponse(messageId: String, noUnsuccess: Short, unsuccessSME: List[Address]) extends PDUPacker {
+case class SubmitMultiResponse(messageId: String, noUnsuccess: Short, unsuccessSME: List[UnsuccessfulAddress]) extends PDUPacker {
   def pack(): List[Int] = {
     cstring2Binary(messageId, 65) ++
     sshort2Binary(noUnsuccess) ++
-    SubmitMulti.destAddressesToBytes(unsuccessSME)
+    SubmitMulti.unsuccessfulAddressesToBytes(unsuccessSME)
   }
 
   def unpack(data: List[Int]): PDUPacker = {
     val (messageId1: String, data2: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
-    val (noUnsuccess1: Short, data3: List[Int]) = (binary2SShort(data.head), data.tail)
-    val (unsuccessSME1: List[Address], _) = SubmitMulti.getAddresses(data3, 0, noUnsuccess1)
+    val (noUnsuccess1: Short, data3: List[Int]) = (binary2SShort(data2.head), data2.tail)
+    val (unsuccessSME1: List[UnsuccessfulAddress], _) = SubmitMulti.getUnsuccessfulAddresses(data3, 0, noUnsuccess1)
     SubmitMultiResponse(messageId1, noUnsuccess1, unsuccessSME1)
   }
 }
