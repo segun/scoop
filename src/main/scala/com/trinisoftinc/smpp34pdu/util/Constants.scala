@@ -87,7 +87,7 @@ object SMPPConstants {
   val PrivacyIndicator = 0x0201
   val SourceSubAddress = 0x0202
   val DestinationSubAddress = 0x0203
-  val UserMessageReference = 0x0204
+  val UserMessageReference: Short = 0x0204
   val UserResponseCode = 0x0205
   val SourcePort = 0x020A
   val DestinationPort = 0x020B

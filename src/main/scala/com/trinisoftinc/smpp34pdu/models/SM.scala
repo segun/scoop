@@ -11,12 +11,20 @@ package com.trinisoftinc.smpp34pdu.models
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
 
-class SM(serviceType: String = "",
-         sourceAddress: Address = SMEAddress(),
-         destAddress: Address = SMEAddress(),
-         esmClass: Short = 0,
-         registeredDelivery: Short = 0,
-         dataCoding: Short = 0) extends PDUPacker {
+class SM(_serviceType: String = "",
+         _sourceAddress: Address = SMEAddress(),
+         _destAddress: Address = SMEAddress(),
+         _esmClass: Short = 0,
+         _registeredDelivery: Short = 0,
+         _dataCoding: Short = 0) extends PDUPacker {
+
+  def serviceType = _serviceType
+  def sourceAddress = _sourceAddress
+  def destAddress = _destAddress
+  def esmClass = _esmClass
+  def registeredDelivery = _registeredDelivery
+  def dataCoding = _dataCoding
+
   def pack(): List[Int] = {
     cstring2Binary(serviceType, 6) ++
     sourceAddress.getBytes ++
@@ -29,21 +37,38 @@ class SM(serviceType: String = "",
   def unpack(data: List[Int]): PDUPacker = this
 }
 
-class SubmitDeliverSM(serviceType: String = "",
-                      sourceAddress: Address = SMEAddress(),
-                      destAddress: Address = SMEAddress(),
-                      esmClass: Short = 0,
-                      protocolId: Short = 0,
-                      priorityFlag: Short = 0,
-                      scheduleDeliveryTime: String = "",
-                      validityPeriod: String = "",
-                      registeredDelivery: Short = 0,
-                      replaceIfPresent: Short = 0,
-                      dataCoding: Short = 0,
-                      smDefaultMsgId: Short = 0,
-                      smLength: Short = 0,
-                      shortMessage: String = "",
-                      tlv: List[TLV] = List.empty) extends SM with Submit {
+class SubmitDeliverSM(_serviceType: String = "",
+                      _sourceAddress: Address = SMEAddress(),
+                      _destAddress: Address = SMEAddress(),
+                      _esmClass: Short = 0,
+                      _protocolId: Short = 0,
+                      _priorityFlag: Short = 0,
+                      _scheduleDeliveryTime: String = "",
+                      _validityPeriod: String = "",
+                      _registeredDelivery: Short = 0,
+                      _replaceIfPresent: Short = 0,
+                      _dataCoding: Short = 0,
+                      _smDefaultMsgId: Short = 0,
+                      _smLength: Short = 0,
+                      _shortMessage: String = "",
+                      _tlv: List[TLV] = List.empty) extends SM with Submit {
+
+  override def serviceType = _serviceType
+  override def sourceAddress = _sourceAddress
+  override def destAddress = _destAddress
+  override def esmClass = _esmClass
+  def protocolId = _protocolId
+  def priorityFlag = _priorityFlag
+  def scheduleDeliveryTime = _scheduleDeliveryTime
+  def validityPeriod = _validityPeriod
+  override def registeredDelivery = _registeredDelivery
+  def replaceIfPresent = _replaceIfPresent
+  override def dataCoding = _dataCoding
+  def smDefaultMsgId = _smDefaultMsgId
+  def smLength = _smLength
+  def shortMessage = _shortMessage
+  def tlv = _tlv
+
 
   override def pack(): List[Int] = {
     cstring2Binary(serviceType, 6) ++
@@ -60,55 +85,6 @@ class SubmitDeliverSM(serviceType: String = "",
       sshort2Binary(smDefaultMsgId) ++
       sshort2Binary(smLength) ++
       string2Binary(shortMessage, 254)
-  }
-
-  override def unpack(data: List[Int]): PDUPacker = this
-
-}
-
-case class SubmitSM(serviceType: String = "",
-                    sourceAddress: Address = SMEAddress(),
-                    destAddress: Address = SMEAddress(),
-                    esmClass: Short = 0,
-                    protocolId: Short = 0,
-                    priorityFlag: Short = 0,
-                    scheduleDeliveryTime: String = "",
-                    validityPeriod: String = "",
-                    registeredDelivery: Short = 0,
-                    replaceIfPresent: Short = 0,
-                    dataCoding: Short = 0,
-                    smDefaultMsgId: Short = 0,
-                    smLength: Short = 0,
-                    shortMessage: String = "",
-                    tlv: List[TLV] = List.empty)
-  extends SubmitDeliverSM(
-    serviceType,
-    sourceAddress,
-    destAddress,
-    esmClass,
-    protocolId,
-    priorityFlag,
-    scheduleDeliveryTime,
-    validityPeriod,
-    registeredDelivery,
-    replaceIfPresent,
-    dataCoding,
-    smDefaultMsgId,
-    smLength,
-    shortMessage,
-    tlv
-  ) {
-
-  override def pack(): List[Int] = {
-    val body: List[Int] = super.pack
-
-    if (!tlv.isEmpty) {
-      //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
-      val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
-      body ++ tlvs
-    } else {
-      body
-    }
   }
 
   override def unpack(data: List[Int]): PDUPacker = {
@@ -131,7 +107,7 @@ case class SubmitSM(serviceType: String = "",
     val sourceAddress1 = SMEAddress(sourceAddrTon1, sourceAddrNpi1, sourceAddr1)
     val destAddress1 = SMEAddress(destAddrTon1, destAddrNpi1, destinationAddr1)
 
-    SubmitSM(serviceType1,
+    new SubmitDeliverSM(serviceType1,
       sourceAddress1,
       destAddress1,
       esmClass1,
@@ -147,6 +123,72 @@ case class SubmitSM(serviceType: String = "",
       shortMessage1,
       tlv1
     )
+  }
+
+}
+
+case class SubmitSM(_serviceType: String = "",
+                    _sourceAddress: Address = SMEAddress(),
+                    _destAddress: Address = SMEAddress(),
+                    _esmClass: Short = 0,
+                    _protocolId: Short = 0,
+                    _priorityFlag: Short = 0,
+                    _scheduleDeliveryTime: String = "",
+                    _validityPeriod: String = "",
+                    _registeredDelivery: Short = 0,
+                    _replaceIfPresent: Short = 0,
+                    _dataCoding: Short = 0,
+                    _smDefaultMsgId: Short = 0,
+                    _smLength: Short = 0,
+                    _shortMessage: String = "",
+                    _tlv: List[TLV] = List.empty)
+  extends SubmitDeliverSM(
+    _serviceType,
+    _sourceAddress,
+    _destAddress,
+    _esmClass,
+    _protocolId,
+    _priorityFlag,
+    _scheduleDeliveryTime,
+    _validityPeriod,
+    _registeredDelivery,
+    _replaceIfPresent,
+    _dataCoding,
+    _smDefaultMsgId,
+    _smLength,
+    _shortMessage,
+    _tlv
+  ) {
+
+  override def pack(): List[Int] = {
+    val body: List[Int] = super.pack
+
+    if (!tlv.isEmpty) {
+      //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
+      val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
+      body ++ tlvs
+    } else {
+      body
+    }
+  }
+
+  override def unpack(data: List[Int]): PDUPacker = {
+    val superUnpack = super.unpack(data).asInstanceOf[SubmitDeliverSM]
+    SubmitSM(superUnpack.serviceType,
+      superUnpack.sourceAddress,
+      superUnpack.destAddress,
+      superUnpack.esmClass,
+      superUnpack.protocolId,
+      superUnpack.priorityFlag,
+      superUnpack.scheduleDeliveryTime,
+      superUnpack.validityPeriod,
+      superUnpack.registeredDelivery,
+      superUnpack.replaceIfPresent,
+      superUnpack.dataCoding,
+      superUnpack.smDefaultMsgId,
+      superUnpack.smLength,
+      superUnpack.shortMessage,
+      superUnpack.tlv)
   }
 }
 

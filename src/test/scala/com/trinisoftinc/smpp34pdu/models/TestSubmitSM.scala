@@ -61,4 +61,22 @@ class TestSubmitSM extends FlatSpec with ShouldMatchers {
     pduPacker should equal (submit_sm)
     pduPacker.pack should equal (submit_sm.pack)
   }
+
+  "A SubmitSM PDU (with TLV: user_message_reference) " should "equal an List of head ++ body " in {
+    val head = List(
+      0, 0, 0, 93,
+      0, 0, 0, 4,
+      0, 0, 0, 0,
+      0, 0, 0, 1
+    )
+    val tlvs = List(
+      TLV(UserMessageReference, 4.asInstanceOf[Short])
+    )
+    val submit_sm = SubmitSM("CMT", sourceAddr, destAddr, 1, 2, 1, sdt, vp, 1, 1, 1, 1, 11, "hello world", tlvs)
+    val pdu = PDU(SUBMIT_SM, ESME_ROK, 0x00000001, submit_sm)
+    val result = pdu.pack
+    val expected = head ++ (body ++ List(2,4,0,2,0,4))
+    result should equal (expected)
+  }
+
 }
