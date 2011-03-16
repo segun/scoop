@@ -10,7 +10,8 @@ package com.trinisoftinc.smpp34pdu.models
 
 import com.trinisoftinc.smpp34pdu.util.SMPPConstants._
 import com.trinisoftinc.smpp34pdu.util.PDUData._
-trait  Submit {
+
+trait Submit {
 
   protected def takeTLV(tlvTag: Short, data: List[Int]): Tuple2[TLV, List[Int]] = {
     tlvTag match {
@@ -70,19 +71,19 @@ trait  Submit {
     }
   }
 
-/*
-  protected def getTLV(data: List[Int]): List[TLV] = {
-    if (data.isEmpty) List.empty
-    else {
-      val tag = data.take(2)
-      val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
-      List(tlv) ++ getTLV(rem)
+  /*
+    protected def getTLV(data: List[Int]): List[TLV] = {
+      if (data.isEmpty) List.empty
+      else {
+        val tag = data.take(2)
+        val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
+        List(tlv) ++ getTLV(rem)
+      }
     }
-  }
-*/
+  */
 
   protected def getTLV(data: List[Int], acc: List[TLV] = Nil): List[TLV] = {
-    if(data.isEmpty) acc.reverse
+    if (data.isEmpty) acc.reverse
     else {
       val tag = data.take(2)
       val (tlv: TLV, rem: List[Int]) = takeTLV(binary2Short(tag), data)
