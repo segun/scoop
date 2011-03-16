@@ -81,7 +81,7 @@ object SMPPConstants {
   val SourceNetworkType = 0x000E
   val SourceBearerType = 0x000F
   val SourceTelematicsId = 0x0010
-  val QosTTL = 0x0017
+  val QosTimeToLive = 0x0017
   val PayLoadType = 0x0019
   val AdditionalStatusInfoText = 0x001D
   val ReceiptedMessageId = 0x001E
