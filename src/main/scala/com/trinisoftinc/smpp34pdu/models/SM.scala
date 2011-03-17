@@ -60,59 +60,6 @@ class SM(_serviceType: String = "",
   }
 }
 
-case class DataSM(_serviceType: String = "",
-                  _sourceAddress: Address = SMEAddress(),
-                  _destAddress: Address = SMEAddress(),
-                  _esmClass: Short = 0,
-                  _registeredDelivery: Short = 0,
-                  _dataCoding: Short = 0,
-                  _tlv: List[TLV] = List.empty) extends SM(_serviceType,
-  _sourceAddress,
-  _destAddress,
-  _esmClass,
-  _registeredDelivery,
-  _dataCoding,
-  _tlv) {
-
-  override def pack(): List[Int] = {
-    val allowedTLVs = List(
-      SourcePort, SourceAddressSubunit, SourceNetworkType, SourceBearerType, SourceTelematicsId,
-      DestinationPort, DestinationAddressSubunit, DestinationNetworkType, DestinationBearerType, DestinationTelematicsId,
-      SarMsgRefNum, SarTotalSegments, SarSegmentSeqnum, MoreMessagesToSend, QosTimeToLive, PayLoadType, MessagePayload,
-      SetDpf, ReceiptedMessageId, MessageState, NetworkErrorCode, UserMessageReference, PrivacyIndicator,
-      CallBackNum, CallBackNumPresInd, CallBackNumAtag, SourceSubAddress, DestinationSubAddress, UserResponseCode,
-      DisplayTime, SmsSignal, MsValidity, MsMsgWaitFacilities, NumberOfMessages, AlertOnMessageDelivery,
-      LanguageIndicator, ItsReplyType, ItsSessionInfo
-    )
-
-    val isAllowed = tlv.forall(x => allowedTLVs.contains(x.tag))
-
-    if (!isAllowed) throw new MatchError("One of the TLVs supplied is not allowed. \nALLOWED: " +
-      allowedTLVs + "\nSUPPLIED: " + tlv)
-
-    val body: List[Int] = super.pack
-
-    if (!tlv.isEmpty) {
-      //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
-      val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
-      body ++ tlvs
-    } else {
-      body
-    }
-  }
-
-  override def unpack(data: List[Int]): PDUPacker = {
-    val superUnpack = super.unpack(data).asInstanceOf[SM]
-    DataSM(superUnpack.serviceType,
-      superUnpack.sourceAddress,
-      superUnpack.destAddress,
-      superUnpack.esmClass,
-      superUnpack.registeredDelivery,
-      superUnpack.dataCoding,
-      superUnpack.tlv)
-  }
-}
-
 class SubmitDeliverSM(_serviceType: String = "",
                       _sourceAddress: Address = SMEAddress(),
                       _destAddress: Address = SMEAddress(),
@@ -295,16 +242,6 @@ case class SubmitSM(_serviceType: String = "",
   }
 }
 
-case class SMResponse(messageId: String) extends PDUPacker {
-  def pack(): List[Int] = {
-    cstring2Binary(messageId, 65)
-  }
-
-  def unpack(data: List[Int]): PDUPacker = {
-    SMResponse(binary2String(data.takeWhile(_ != 0)))
-  }
-}
-
 case class DeliverSM(_serviceType: String = "",
                      _sourceAddress: Address = SMEAddress(),
                      _destAddress: Address = SMEAddress(),
@@ -380,5 +317,92 @@ case class DeliverSM(_serviceType: String = "",
       superUnpack.smLength,
       superUnpack.shortMessage,
       superUnpack.tlv)
+  }
+}
+
+case class DataSM(_serviceType: String = "",
+                  _sourceAddress: Address = SMEAddress(),
+                  _destAddress: Address = SMEAddress(),
+                  _esmClass: Short = 0,
+                  _registeredDelivery: Short = 0,
+                  _dataCoding: Short = 0,
+                  _tlv: List[TLV] = List.empty) extends SM(_serviceType,
+  _sourceAddress,
+  _destAddress,
+  _esmClass,
+  _registeredDelivery,
+  _dataCoding,
+  _tlv) {
+
+  override def pack(): List[Int] = {
+    val allowedTLVs = List(
+      SourcePort, SourceAddressSubunit, SourceNetworkType, SourceBearerType, SourceTelematicsId,
+      DestinationPort, DestinationAddressSubunit, DestinationNetworkType, DestinationBearerType, DestinationTelematicsId,
+      SarMsgRefNum, SarTotalSegments, SarSegmentSeqnum, MoreMessagesToSend, QosTimeToLive, PayLoadType, MessagePayload,
+      SetDpf, ReceiptedMessageId, MessageState, NetworkErrorCode, UserMessageReference, PrivacyIndicator,
+      CallBackNum, CallBackNumPresInd, CallBackNumAtag, SourceSubAddress, DestinationSubAddress, UserResponseCode,
+      DisplayTime, SmsSignal, MsValidity, MsMsgWaitFacilities, NumberOfMessages, AlertOnMessageDelivery,
+      LanguageIndicator, ItsReplyType, ItsSessionInfo
+    )
+
+    val isAllowed = tlv.forall(x => allowedTLVs.contains(x.tag))
+
+    if (!isAllowed) throw new MatchError("One of the TLVs supplied is not allowed. \nALLOWED: " +
+      allowedTLVs + "\nSUPPLIED: " + tlv)
+
+    val body: List[Int] = super.pack
+
+    if (!tlv.isEmpty) {
+      //tlv.foldLeft(TLV().pack)((a, b) => a ++ b.pack)
+      val tlvs = (TLV().pack /: tlv)(_ ++ _.pack)
+      body ++ tlvs
+    } else {
+      body
+    }
+  }
+
+  override def unpack(data: List[Int]): PDUPacker = {
+    val superUnpack = super.unpack(data).asInstanceOf[SM]
+    DataSM(superUnpack.serviceType,
+      superUnpack.sourceAddress,
+      superUnpack.destAddress,
+      superUnpack.esmClass,
+      superUnpack.registeredDelivery,
+      superUnpack.dataCoding,
+      superUnpack.tlv)
+  }
+}
+
+case class SMResponse(messageId: String) extends PDUPacker {
+  def pack(): List[Int] = {
+    cstring2Binary(messageId, 65)
+  }
+
+  def unpack(data: List[Int]): PDUPacker = {
+    SMResponse(binary2String(data.takeWhile(_ != 0)))
+  }
+}
+
+case class DataSMResponse(messageId: String = "", tlv: List[TLV] = List.empty) extends PDUPacker with Submit {
+  def pack(): List[Int] = {
+
+    val allowedTLVs = List(
+      DeliveryFailureReason, NetworkErrorCode, AdditionalStatusInfoText, DpfResult
+    )
+    val isAllowed = tlv.forall(x => allowedTLVs.contains(x.tag))
+    if (!isAllowed) throw new MatchError("One of the TLVs supplied is not allowed. \nALLOWED: " +
+      allowedTLVs + "\nSUPPLIED: " + tlv)
+    val body = cstring2Binary(messageId, 65)
+    if(!tlv.isEmpty) {
+      body ++ (TLV().pack /: tlv) (_ ++ _.pack)
+    } else {
+      body
+    }
+  }
+
+  def unpack(data: List[Int]): PDUPacker = {
+    val (messageId1, tlvs: List[Int]) = (binary2String(data.takeWhile(_ != 0)), data.dropWhile(_ != 0).tail)
+    val tlv1 = getTLV(tlvs)
+    DataSMResponse(messageId1, tlv1)
   }
 }
